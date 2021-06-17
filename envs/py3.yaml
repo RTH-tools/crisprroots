@@ -1,0 +1,25 @@
+channels:
+  - anaconda
+  - conda-forge
+  - bioconda
+  - r
+  - RTHtools
+  - defaults
+dependencies:
+  - bcftools=1.9
+  - bedops=2.4.39
+  - bedtools=2.29.2
+  - biopython=1.70
+  - conda-forge::libgcc-ng=9.3
+  - conda-forge::libgomp=9.3
+  - numpy=1.12.1
+  - openpyxl=2.4.0
+  - pandas=0.24.2
+  - python=3.6.10
+  - r-base=3.6.1
+  - samtools=1.9
+  - libgit2=1.1.0
+  - libcurl=7.67.0
+  - r-curl=4.3
+  - risearch=2.1
+  - ucsc-twobittofa=377

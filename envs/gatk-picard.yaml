@@ -1,0 +1,10 @@
+channels:
+  - conda-forge
+  - bioconda
+  - r
+  - anaconda
+  - defaults
+dependencies:
+  - gatk4=4.2.0.0
+  - picard=2.23.0
+  - parallel=20201122

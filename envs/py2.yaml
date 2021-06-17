@@ -1,0 +1,8 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=2.7.18
+  - viennarna=2.2.5
+  - biopython=1.70

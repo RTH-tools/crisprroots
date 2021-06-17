@@ -1,0 +1,107 @@
+#########################################################PROJECT PARAMETERS#########################################################
+results_folder: /add_your_full_path_until_here/CRISPRroots_test_dataset/QPRT_DEL268T_chr16_10M-40M/results
+report_folder: /add_your_full_path_until_here/CRISPRroots_test_dataset/QPRT_DEL268T_chr16_10M-40M/report
+samples_folder: /add_your_full_path_until_here/CRISPRroots_test_dataset/QPRT_DEL268T_chr16_10M-40M/SAMPLES
+biosample: QPRT_DEL268T_chr16_10M-40M
+# absolute path to sample sheet (list of sample identifiers)
+samples_table: /add_your_full_path_until_here/CRISPRroots_test_dataset/QPRT_DEL268T_chr16_10M-40M/samples_table.tsv
+# suffix of samples
+sample_suffix: .fastq.gz
+#type of sequencing, either single or paired
+sequencing: single
+single_chr: ["chrY"] #unknown
+variated_genome: 'no'
+##########################################################SPECIES FILES##############################################################
+species: homo_sapiens
+# absolute path to folder containing samples
+picard_reference: /add_your_full_path_until_here/CRISPRroots_test_dataset/resources/GRCh38.primary_assembly.chr16.fa
+repeatmasked_regions: /add_your_full_path_until_here/CRISPRroots_test_dataset/resources/RepeatMasker_hg38_chr16.bed
+# absolute path to indexed genome
+STAR_indexed_transcriptome: /add_your_full_path_until_here/CRISPRroots_test_dataset/resources/STAR_chr16
+common_variants_vcf: /add_your_full_path_until_here/CRISPRroots_test_dataset/resources/chr16.vcf.gz
+annotations_gtf: /add_your_full_path_until_here/CRISPRroots_test_dataset/resources/gencode_fantomcat.v1.02.genes_transcripts_exons_chr16.gtf
+path_to_snakemake: /add_your_full_path_until_here/CRISPRroots-1.0
+ssu_rrna_silva: /add_your_full_path_until_here/CRISPRroots_test_dataset/resources/SILVA_119.1_SSURef_Nr99_tax_silva_trunc.fasta.gz
+lsu_rrna_silva: /add_your_full_path_until_here/CRISPRroots_test_dataset/resources/SILVA_119_LSURef_tax_silva_trunc.fasta.gz
+dbSNP142: /add_your_full_path_until_here/CRISPRroots_test_dataset/resources/common_SNP_142
+RSeQC_gene_model: /add_your_full_path_until_here/CRISPRroots_test_dataset/resources/g38_RefSeq_genemodel.bed
+#########################################################TOOLS PARAMETERS###########################################################
+
+R_install_pkgs:
+  threads: "5"
+
+Cutadapt: #!
+  # path to file containing adapter sequence that might be ligated to 3' end of reads
+  adapter: "/add_your_full_path_until_here/CRISPRroots_test_dataset/resources/illumina_universal.fa"
+  # threshold used for quality trimming
+  phread_score: "30"
+  # reads shorter than this length are discarded
+  min_length: "61"
+  other: "--trim-n"
+
+BCF_consensus:
+  heterozygous_keep : A #A=keep ALT allele, R=Keep REF allele
+
+Featurecounts: #!
+  libtype : 1
+
+DESEq2: #!
+  formula : ~ Condition
+
+Endonuclease: #!
+  cut_position : -3
+  gRNA_sequence : GCAGTTGAGTTGGGTAAATA #!
+  gRNA_with_PAM_fasta : /add_your_full_path_until_here/CRISPRroots_test_dataset/QPRT_DEL268T_chr16_10M-40M/gRNA_plus_PAM.fa
+  binding_sites_seq : ["GG", "GA", "AG"]
+  binding_sites_ratios: [0.1, 0.8, 0.9]
+  binding_sites_distance : 1
+  extend_binding : 2
+  eng_threshold : -12.0
+  seed_region : 10
+  max_mm_seed : 1
+  max_mm_total : 6
+
+CRISPRoff: #!
+  crisproff_output : /add_your_full_path_until_here/CRISPRroots_test_dataset/QPRT_DEL268T_chr16_10M-40M/GCAGTTGAGTTGGGTAAATATGG.CRISPRoff.tsv
+  webserver : --webserver
+
+Edits: #!
+  type : KO
+  position : ["chr16:29694840"] # 1 based
+  mutant : ["N"]
+  splice_acceptor : [0]
+  splice_donor : [0]
+  intron : [0]
+  KO : ["ENSG00000103485.19"]
+
+#####OPTIONAL#####
+BBDuck:
+  # fraction of the read bases to be covered by reference kmers to be considered as match
+  mcf: "0.5"
+  # size of the Kmers used by BBduk
+  K: "31"
+  # max amount of memory in GB to be used
+  MAX_MEM: -Xmx8g
+
+STAR_aligner:
+  threads: "4"
+
+MUTECT2:
+  # base qualiy score threshold. Base qualities below this threshold will be reduced to the minimum (6)
+  base_quality_score_threshold: 30
+  # callable depth. Minimum depth to be considered callable for Mutect stats. Does not affect genotyping.
+  callable_depth : 10
+  # Minimum base quality required to consider a base for calling,
+  min_base_quality_score: 10
+  num_threads: 4
+
+VariantBasedScreening:
+  expand_search : 2
+
+ExpressionBasedScreening:
+  len_promoter : 1000
+  crisproff: --crisproff
+
+Liftover:
+  min_match : 0.95
+

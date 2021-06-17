@@ -1,0 +1,332 @@
+$schema: "http://json-schema.org/draft-04/schema#"
+
+description: snakemake configuration file
+type: object
+
+properties:
+  results_folder:
+    type: string
+
+  report_folder:
+    type: string
+
+  samples_folder:
+    type: string
+
+  biosample:
+    type: string
+
+  samples_table:
+    type: string
+
+  sample_suffix:
+    type: string
+
+  sample_suffix_R1:
+    type: string
+
+  sample_suffix_R2:
+    type: string
+
+  sequencing:
+    type: string
+    items:
+      - single
+      - paired
+
+  variated_genome:
+    type: string
+    items:
+      - yes
+      - no
+
+  single_chr:
+    type: array
+    items:
+      type: string
+
+  species:
+    type: string
+
+  picard_reference:
+    type: string
+
+  repeatmasked_regions:
+    type: string
+
+  STAR_indexed_transcriptome:
+    type: string
+
+  common_variants_vcf:
+    type: string
+
+  annotations_gtf:
+    type: string
+
+  path_to_snakemake:
+    type: string
+
+  ssu_rrna_silva:
+    type: string
+
+  lsu_rrna_silva:
+    type: string
+
+  dbSNP142:
+    type: string
+
+  RSeQC_gene_model:
+    type: string
+
+  Cutadapt:
+    type: object
+    properties:
+      phread_score:
+        type: string
+      adapter:
+        type: string
+      min_length:
+        type: string
+      other:
+        type: string
+      adapter_R1:
+        type: string
+      adapter_R2:
+        type: string
+  required:
+    - phread_score
+    - min_length
+    - other
+  oneOf:
+    -required:
+      - adapter
+    -required:
+      - adapter_R1
+      - adapter_R2
+
+  BCF_consensus:
+    type: object
+    properties:
+      heterozygous_keep:
+        type: string
+        items:
+          - R
+          - A
+  required:
+    - heterozygous_keep
+
+  Featurecounts:
+    type: object
+    properties:
+      libtype:
+        type: integer
+        items:
+          - 0
+          - 1
+          - 2
+  required:
+    - libtype
+
+  DESEq2:
+    type: object
+    properties:
+      formula:
+        type: string
+  required:
+    - formula
+
+  Endonuclease:
+    type: object
+    properties:
+      cut_position:
+        type: integer
+      gRNA_sequence:
+        type: string
+      gRNA_with_PAM_fasta:
+        type: string
+      binding_sites_seq:
+        type: array
+        items:
+          type: string
+      binding_sites_ratios:
+        type: array
+        items:
+          type: number
+      binding_sites_distance:
+        type: integer
+      extend_binding:
+        type: integer
+      eng_threshold:
+        type: number
+      seed_region:
+        type: integer
+      max_mm_seed:
+        type: integer
+
+  required:
+    - cut_position
+    - gRNA_sequence
+    - gRNA_with_PAM_fasta
+    - binding_sites_seq
+    - binding_sites_ratios
+    - binding_sites_distance
+    - extend_binding
+    - eng_threshold
+    - seed_region
+    - max_mm_seed
+
+  Edits:
+    type: object
+    properties:
+      edit_type:
+        type: string
+        items:
+          - KI
+          - KO
+      position:
+        type: array
+        items:
+          type: string
+      mutant:
+        type: array
+        items:
+          type: string
+      splice_acceptor:
+        type: array
+        items:
+          type: integer
+      splice_donor:
+        type: array
+        items:
+          type: integer
+      intron:
+        type: array
+        items:
+          type: integer
+      KO:
+        type: array
+        items:
+          type: string
+  required:
+    - edit_type
+    - position
+    - mutant
+    - splice_acceptor
+    - splice_donor
+    - intron
+    - KO
+
+  BBDuck:
+    type: object
+    properties:
+      mcf:
+        type: string
+      K:
+        type: string
+      MAX_MEM:
+        type: string
+  required:
+    - mcf
+    - K
+    - MAX_MEM
+
+  STAR_aligner:
+    type: object
+    properties:
+      threads:
+        type: string
+  required:
+    - threads
+
+  R_install_pkgs:
+    type: object
+    properties:
+      threads:
+        type: string
+  required:
+    - threads
+
+  MUTECT2:
+    type: object
+    properties:
+      base_quality_score_threshold:
+        type: integer
+      callable_depth:
+        type: integer
+      min_base_quality_score:
+        type: integer
+      num_threads:
+        type: integer
+  required:
+    - base_quality_score_threshold
+    - callable_depth
+    - min_base_quality_score
+    - num_threads
+
+  VariantBasedScreening:
+    type: object
+    properties:
+      expand_search:
+        type: integer
+  required:
+    - expand_search
+
+  ExpressionBasedScreening:
+    type: object
+    properties:
+      len_promoter:
+        type: integer
+      crisproff:
+        type: string
+  required:
+    - len_promoter
+    - crisproff
+
+  Liftover:
+    type: object
+    properties:
+      min_match:
+        type: number
+  required:
+    - min_match
+
+oneOf:
+  - required:
+    - sample_suffix
+  - required:
+    - sample_suffix_R1
+    - sample_suffix_R2
+
+required:
+  - results_folder
+  - report_folder
+  - samples_folder
+  - biosample
+  - samples_table
+  - sequencing
+  - single_chr
+  - variated_genome
+  - species
+  - picard_reference
+  - repeatmasked_regions
+  - STAR_indexed_transcriptome
+  - common_variants_vcf
+  - annotations_gtf
+  - path_to_snakemake
+  - ssu_rrna_silva
+  - lsu_rrna_silva
+  - dbSNP142
+  - RSeQC_gene_model
+  - R_install_pkgs
+  - Cutadapt
+  - BCF_consensus
+  - Featurecounts
+  - DESEq2
+  - Endonuclease
+  - Edits
+  - BBDuck
+  - STAR_aligner
+  - MUTECT2
+  - VariantBasedScreening
+  - ExpressionBasedScreening
+  - Liftover

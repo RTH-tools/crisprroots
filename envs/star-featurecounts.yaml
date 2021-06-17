@@ -1,0 +1,7 @@
+channels:
+  - conda-forge
+  - compbiocore
+  - bioconda
+dependencies:
+  - star=2.6.1a
+  - subread=2.0.1
