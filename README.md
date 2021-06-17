@@ -18,7 +18,7 @@ We did not find a suitable combination of R package versions available for insta
 ### Setup
 
 CRISPRroots (version 1.0) is available to download from [https://rth.dk/resources/crispr/](https://rth.dk/resources/crispr/).  
-The test dataset can be downloaded separately from [https://rth.dk/resources/crispr/crisprroots/downloads/CRISPRroots_test_dataset.tar.gz]>(here).
+The test dataset can be downloaded separately from [https://rth.dk/resources/crispr/crisprroots/downloads/CRISPRroots_test_dataset.tar.gz](here).
 After downloading the software and the test dataset and un-packing, we recommend to explore the directory structure of the test dataset.
 
 *  CRISPRroots_test_dataset
