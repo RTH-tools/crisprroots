@@ -4,9 +4,9 @@ rule ROOTS_getOfftargetCutPositions:
     OR from a bed file with predicted off-targets. CRISPRoff webserver version.
     """
     output:
-        off_cutpos="%s/12-0_OffTargetCutPos/offtarget_cut_positions.bed" % config["results_folder"]
+        off_cutpos=temp("%s/12-0_OffTargetCutPos/offtarget_cut_positions.bed" % config["results_folder"])
     params:
-        scripts_folder=config["path_to_snakemake"],
+        scripts_folder=config["CRISPRroots"],
         cp=config["Endonuclease"]["cut_position"],
         gRNA=config["Endonuclease"]["gRNA_sequence"],
         report=config["report_folder"],

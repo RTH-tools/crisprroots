@@ -8,17 +8,16 @@ rule FASTQC_qualitycheck_after_removal_rRNA:
         directory("%s/preproc/2-1_fastqc_after_rRNA_removal/{sample}" % config["results_folder"])
     log:
         "%s/logs/preproc/2-1_fastqc_after_rRNA_removal_{sample}.log" % config["results_folder"]
-    benchmark:
-        "%s/benchmark/preproc/2-1_fastqc_after_rRNA_removal_{sample}.benchmark.tsv" % config["results_folder"]
     threads: 4
     conda:
         "../../../envs/preproc-qc.yaml"
     shell:"""
+    
         [ ! -d \"{output}\" ] && mkdir {output}
 
         #******PARAMETERS*****
         # -t : number of threads to be used
         # -o: path to output directory
 
-        fastqc -t {threads} {input} -o {output} &> {log}
+        fastqc -t {threads} {input} -o {output} &>{log}
     """

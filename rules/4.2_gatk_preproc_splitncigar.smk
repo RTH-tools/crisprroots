@@ -6,6 +6,7 @@ rule GATK_splitncigar:
         dedup="%s/4_GATK_dedupSplit/{sample}/{sample}.Dedup.sorted.bam" % config["results_folder"]
     output:
         split=temp("%s/4_GATK_dedupSplit/{sample}/{sample}.Split.bam" % config["results_folder"]),
+        dedup_idx=temp("%s/4_GATK_dedupSplit/{sample}/{sample}.Split.bai" % config["results_folder"])
     log:
         "%s/logs/4-2_GATK_SplitNCigar_{sample}.log" % config["results_folder"],
     params:

@@ -6,7 +6,7 @@ rule BCFTOOLS_novariants:
         intersection="%s/6_GATK_variants/intersection_original/0000.vcf.gz" % config["results_folder"],
         vcf_intersection=temp("%s/6_GATK_variants/intersection_original/0000.vcf" % config["results_folder"])
     params:
-        scripts_folder=config["path_to_snakemake"]
+        scripts_folder=config["CRISPRroots"]
     conda:
         "../envs/py3.yaml"
     shell: """

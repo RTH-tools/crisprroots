@@ -201,4 +201,4 @@ for path_alignment in args.b:
                                        lst_splice_acc=args.splice_acceptor, lst_splice_don=args.splice_donor,
                                        lst_positions=args.p)
 with pd.ExcelWriter(args.o, engine='openpyxl') as writer:
-    df.to_excel(writer, sheet_name='Detailed', index_label='Sample')
+    df.to_excel(writer, sheet_name='Summary KI', index_label='Sample')

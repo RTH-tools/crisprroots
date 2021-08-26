@@ -2,8 +2,9 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - ucsc-twobitinfo=357=1
-  - ucsc-fatotwobit=366
-  - openssl=1.0
-  - ucsc-liftover=357=1
-  - bedops=2.4.39=hc9558a2_0
+  - ucsc-twobitinfo
+  - ucsc-fatotwobit
+  - openssl
+  - ucsc-liftover
+  - bedops=2.4.39
+  - python=3

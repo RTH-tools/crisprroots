@@ -7,7 +7,7 @@ rule GATK_markdup:
     output:
         dedup=temp("%s/4_GATK_dedupSplit/{sample}/{sample}.Dedup.bam" % config["results_folder"]),
         dedup_sorted=temp("%s/4_GATK_dedupSplit/{sample}/{sample}.Dedup.sorted.bam" % config["results_folder"]),
-        metrics="%s/4_GATK_dedupSplit/{sample}/{sample}.Dedup.Metrics" % config["results_folder"],
+        metrics=temp("%s/4_GATK_dedupSplit/{sample}/{sample}.Dedup.Metrics" % config["results_folder"]),
     log:
         "%s/logs/4-1_GATK_MarkDup_{sample}.log" % config["results_folder"],
     conda:

@@ -3,13 +3,13 @@ rule ROOTS_ontarget_check_knockout:
     Check for the presence of transcript KO
     """
     input:
-        diffexp="%s/12-1_DESEq2DE/diffexpr-results.tsv" % config["results_folder"]
+        diffexp="%s/12-1_DESeq2/diffexpr-results.tsv" % config["results_folder"]
     output:
         report="%s/../report/on_target_knockout.xlsx" % config["results_folder"]
     log:
         "%s/logs/8_ROOTS_ontarget_check.log" % config["results_folder"]
     params:
-        scripts_folder=config["path_to_snakemake"],
+        scripts_folder=config["CRISPRroots"],
         targets=config["Edits"]["KO"],
     conda:
         "../envs/py3.yaml"

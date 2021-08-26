@@ -6,8 +6,8 @@ rule BEDOPS_liftover:
         bed="%s/10_bedops_vcf2bed/mutect2_variants.bed" % config["results_folder"],
         chain_liftover="%s/6_GATK_variants/chain_liftover_variated_genome.chain" % config["results_folder"]
     output:
-        lifted_coords="%s/10_bedops_vcf2bed/mutect2_lifted.bed" % config["results_folder"],
-        unlifted_coords="%s/10_bedops_vcf2bed/mutect2_unlifted.bed" % config["results_folder"]
+        lifted_coords=temp("%s/10_bedops_vcf2bed/mutect2_lifted.bed" % config["results_folder"]),
+        unlifted_coords=temp("%s/10_bedops_vcf2bed/mutect2_unlifted.bed" % config["results_folder"])
     params:
         min_match=config["Liftover"]["min_match"]
     log:

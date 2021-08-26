@@ -5,8 +5,8 @@ rule GATK_mutect2_chromosome_wise:
     """
     input:
         edited=expand("%s/5_chromosome_wise_splitted_bam/{edited}/" % config["results_folder"],edited=lst_edited),
-        original=expand("%s/5_chromosome_wise_splitted_bam/{original}/" % config[
-            "results_folder"],original=lst_original),
+        original=expand("%s/5_chromosome_wise_splitted_bam/{original}/" % config["results_folder"],original=lst_original),
+        chrsplit_checkpoint="%s/5_chromosome_wise_splitted_bam/split.done" % config["results_folder"]
     output:
         checkpoint="%s/7_GATK_mutect2_chromosome_wise/mutect2.done" % config["results_folder"],
     log:
@@ -14,20 +14,19 @@ rule GATK_mutect2_chromosome_wise:
     params:
         outdir="%s/7_GATK_mutect2_chromosome_wise/" % config["results_folder"],
         indir="%s/5_chromosome_wise_splitted_bam/" % config["results_folder"],
-        dbsnp=config["common_variants_vcf"],
-        BQST=config["MUTECT2"]["base_quality_score_threshold"],
-        MQB=config["MUTECT2"]["min_base_quality_score"],
-        CD=config["MUTECT2"]["callable_depth"],
-        scripts_folder=config["path_to_snakemake"],
+        BQST=config["Mutect2"]["base_quality_score_threshold"],
+        MQB=config["Mutect2"]["min_base_quality_score"],
+        CD=config["Mutect2"]["callable_depth"],
+        scripts_folder=config["CRISPRroots"],
         reference=config["picard_reference"],
-        paralel_jobs=config["MUTECT2"]["num_threads"],
+        parallel_jobs=config["Mutect2"]["num_threads"]
 
     conda:
         "../envs/gatk-picard.yaml"
     shell: """
     
         #******PARAMETERS*****
-        # MUTEC2 params in script 7_run_gatk.py
+        # Mutect2 params in script 7_run_gatk.py
         # -bqst : --base qualiy score threshold. Base qualities below this threshold will be reduced to the minimum (6)
         # -cd : --callable depth. Minimum depth to be considered callable for Mutect stats. Does not affect genotyping.
         # -mqb : --min-base-quality-score: Minimum base quality required to consider a base for calling,
@@ -54,9 +53,9 @@ rule GATK_mutect2_chromosome_wise:
 
            infile_edited=$(for i in {input.edited}; do echo $(find $i -type f -name '*.bam' | grep $x); done);
            infile_original=$(for i in {input.original}; do echo $(find $i -type f -name '*.bam' | grep $x); done);
-           
-           out=$(echo {params.outdir}$x".vcf" | sed 's/\./_/g; s/_bam//g; s/_vcf/.vcf/g')
-           out2=$(echo {params.outdir}$x".vcf" | sed 's/\./_/g; s/_bam//g; s/_vcf/_filtered.vcf/g')
+
+           out=$(echo {params.outdir}$x".vcf" | sed 's/\.bam//g;')
+           out2=$(echo {params.outdir}$x"_filtered.vcf" | sed 's/\.bam//g;')
            logout=$(echo {log} | sed "s/\.log/_$x/g; s/.bam/.log/g")
 
            echo \ "output file name for $x:" $out 
@@ -74,7 +73,7 @@ rule GATK_mutect2_chromosome_wise:
 
         # calling GNU parallel
         export -f invoke_mutect2_script
-        parallel --verbose -j {params.paralel_jobs} invoke_mutect2_script ::: $infile_edited_chr
+        parallel --verbose -j {params.parallel_jobs} invoke_mutect2_script ::: $infile_edited_chr
 
         touch "{output.checkpoint}"
 

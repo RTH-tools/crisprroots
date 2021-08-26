@@ -4,15 +4,19 @@ rule DESEQ2_differential_expression:
     """
     input:
         featurecounts="%s/9_featurecounts_quantification/feature_count.tsv" % config["results_folder"],
-        Rlog="%s/0_utils/0-0_R_install_check.tmp" % config["results_folder"]
     output:
-        diffexp_table="%s/12-1_DESEq2DE/diffexpr-results.tsv" % config["results_folder"]
+        diffexp_table=temp("%s/12-1_DESeq2/diffexpr-results.tsv" % config["results_folder"]),
+        featurecounts_table=temp("%s/12-1_DESeq2/feature_count.tsv" % config["results_folder"]),
+        deup=temp("%s/12-1_DESeq2/genes_DEUp.tsv" % config["results_folder"]),
+        dedown=temp("%s/12-1_DESeq2/genes_DEDown.tsv" % config["results_folder"]),
+        notdeexp=temp("%s/12-1_DESeq2/genes_NotDEExpressed.tsv" % config["results_folder"]),
+        notdenotexp=temp("%s/12-1_DESeq2/genes_NotDENotExpressed.tsv" % config["results_folder"])
     params:
         phenotypes=config["samples_table"],
-        design_formula=config["DESEq2"]["formula"],
-        scripts_folder=config["path_to_snakemake"],
+        design_formula=config["DESeq2"]["formula"],
+        scripts_folder=config["CRISPRroots"],
         KO_genes=config["Edits"]["KO"],
-        diffexp="%s/12-1_DESEq2DE" % config["results_folder"],
+        diffexp="%s/12-1_DESeq2" % config["results_folder"],
         report=config["report_folder"]
     log:
         s="%s/logs/12-1_setup_de.log" % config["results_folder"],

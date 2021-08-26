@@ -1,0 +1,94 @@
+__default__:
+    time: 1-00:00:00
+    job-name: CRISPRroots
+    ntasks: 1
+    cpus-per-task: 4
+    mem-per-cpu: 4000
+    partition: fastlane 
+    output: ./cluster_logs/{rule}_{wildcards}.out
+    error: ./cluster_logs/{rule}_{wildcards}.err
+
+CUTADAPT_cleaning:
+    job-name: p1_cutadapt
+    cpus-per-task: 6
+    mem-per-cpu: 4000
+    partition: fastlane
+
+BBDUK_filter_rrna:
+    job-name: p2_bbduck
+    cpus-per-task: 6
+    mem-per-cpu: 4000
+    partition: fastlane
+
+STAR_align2pass:
+    job-name: 1_star
+    cpus-per-task: 10
+    mem-per-cpu: 4000
+    partition: fastlane
+
+PICARD_sortaligned:
+    job-name: 3_picard
+    cpus-per-task: 6
+    mem-per-cpu: 4000
+    partition: fastlane
+
+GATK_markdup:
+    job-name: 5_gatk_markdup
+    cpus-per-task: 12
+    mem-per-cpu: 4000
+    partition: fastlane
+
+GATK_splitncigar:
+    job-name: 5_gatk_spltncigar
+    cpus-per-task: 12
+    mem-per-cpu: 4000
+    partition: fastlane
+
+GATK_haplotypecaller:
+    job-name: 6_haplotypecaller
+    cpus-per-task: 12
+    mem-per-cpu: 4000
+    partition: fastlane
+
+BEDTOOLS_intersect_variants_genes:
+    job-name: vars_genes
+    cpus-per-task: 12
+    mem-per-cpu: 4000
+    partition: fastlane
+
+RIsearch2_indexing:
+    job-name: 6_RIsearch2_indexing
+    cpus-per-task: 16
+    mem: 60G
+    partition: fastlane
+
+RIsearch2_search:
+    job-name: 6_RIsearch2_search
+    cpus-per-task: 16
+    mem: 60G
+    partition: fastlane
+
+CRISPRoff:
+    job-name: 6_CRISPRoff
+    cpus-per-task: 16
+    mem: 12G
+    partition: fastlane
+
+GATK_mutect2_chromosome_wise:
+    job-name: 7_mutect2
+    cpus-per-task: 16
+    mem-per-cpu: 4000
+    partition: fastlane
+    time: 0
+
+FEATURECOUNTS_quantification:
+    job-name: 9_featurecounts
+    cpus-per-task: 4
+    mem-per-cpu: 4000
+    partition: fastlane
+
+SAMTOOLS_flag:
+    job-name: samflag
+    cpus-per-task: 12
+    mem-per-cpu: 4000
+    partition: fastlane

@@ -3,7 +3,7 @@ rule CRISPRoff:
     Use CRISPRoff to find off-targets
     """
     input:
-        "%s/6-5_CRISPRoff/RIsearch/" % config["results_folder"]
+        "%s/6-5_CRISPRoff/RIsearch2/risearch_%s.out.gz" % (config["results_folder"],gRNA_ID)
     output:
         CRISPRspec="%s/6-5_CRISPRoff/CRISPRspec.tsv" % config["results_folder"],
         CRISPRparams="%s/6-5_CRISPRoff/CRISPRparams.tsv" % config["results_folder"],
@@ -11,12 +11,12 @@ rule CRISPRoff:
     log:
         "%s/logs/6-5-2_CRISPRoff_eval.log" % config["results_folder"]
     params:
-        gRNA=config["Endonuclease"]["gRNA_with_PAM_fasta"],
+        gRNA=config["gRNA_with_PAM_fasta"],
         folder="%s/6-5_CRISPRoff/" % config["results_folder"],
-        scripts_folder=config["path_to_snakemake"],
+        scripts_folder=config["CRISPRroots"],
         gRNA_plus_PAM="%s.CRISPRoff.tsv" % gRNA_with_PAM
     conda:
-        "../envs/py2.yaml"
+        "../envs/py3.yaml"
     shell: """
     
         #******PARAMETERS*****
@@ -29,13 +29,15 @@ rule CRISPRoff:
         # --evaluate_all : evaluate the gRNA even if its on-target is not in the genome
         # --CRISPRoff_scores_folder : path where the CRISPRoff results will be stored
     
-        python2 \
-        {params.scripts_folder}/scripts/crisproff-1.1.1/CRISPRspec_CRISPRoff_pipeline.py \
+        risearch_dir="$(dirname "{input}")"
+        echo $risearch_dir
+        python3 \
+        {params.scripts_folder}/scripts/crisproff-1.1.2/CRISPRspec_CRISPRoff_pipeline.py \
         --guides {params.gRNA} \
-        --risearch_results_folder {input} \
+        --risearch_results_folder $risearch_dir \
         --no_azimuth \
         --duplex_energy_params \
-        {params.scripts_folder}/scripts/crisproff-1.1.1/energy_dics.pkl \
+        {params.scripts_folder}/scripts/crisproff-1.1.2/energy_dics.pkl \
         --specificity_report {output.CRISPRspec} \
         --guide_params_out {output.CRISPRparams} \
         --evaluate_all \

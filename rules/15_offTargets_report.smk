@@ -14,7 +14,7 @@ rule ROOTS_offTargetReport:
     log:
         "%s/logs/15_Offtarget_report.log" % config["results_folder"]
     params:
-        scripts_folder=config["path_to_snakemake"],
+        scripts_folder=config["CRISPRroots"],
         seed=config["Endonuclease"]["seed_region"],
         g=config["Endonuclease"]["gRNA_sequence"],
         cp=config["Endonuclease"]["cut_position"],

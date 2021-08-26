@@ -1,4 +1,4 @@
-rule FLAGS:
+rule SAMTOOLS_flag:
     """
     Add flags for repeatmasked and known SNPs
     """
@@ -8,9 +8,9 @@ rule FLAGS:
         lifted_snpdb="%s/0_utils/lifted_SNPdb.bed" % config["results_folder"],
         lifted_rpkm="%s/0_utils/lifted_repeatmask.bed" % config["results_folder"],
     output:
-        fsv="%s/13_flags/fsv.bed" % config["results_folder"],
-        frv="%s/13_flags/frv.bed" % config["results_folder"],
-        frt="%s/13_flags/frt.bed" % config["results_folder"]
+        fsv=temp("%s/13_flags/fsv.bed" % config["results_folder"]),
+        frv=temp("%s/13_flags/frv.bed" % config["results_folder"]),
+        frt=temp("%s/13_flags/frt.bed" % config["results_folder"])
     log:
         fsv="%s/logs/13_flags_fsv.log" % config["results_folder"],
         frt="%s/logs/13_flags_frt.log" % config["results_folder"],

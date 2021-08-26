@@ -12,20 +12,20 @@ rule BBDUK_filter_rrna:
             config["results_folder"], config["sample_suffix_R1"])),
         second=temp("%s/preproc/2_bbduk_rrna_filter/{sample}/{sample}%s" % (
             config["results_folder"], config["sample_suffix_R2"])),
-    params:
-        mcf=config["BBDuck"]["mcf"],
-        K=config["BBDuck"]["K"],
-        MAX_MEM=config["BBDuck"]["MAX_MEM"],
-        ssu_rrna_silva_file=config["ssu_rrna_silva"],
-        lsu_rrna_silva_file=config["lsu_rrna_silva"],
         first_ssu=temp("%s/preproc/2_bbduk_rrna_filter/{sample}/{sample}_filtered_SSU_only%s" % (
-            config["results_folder"], config["sample_suffix_R1"])),
+        config["results_folder"],config["sample_suffix_R1"])),
         second_ssu=temp("%s/preproc/2_bbduk_rrna_filter/{sample}/{sample}_filtered_SSU_only%s" % (
             config["results_folder"], config["sample_suffix_R2"])),
         ssu_matched=temp("%s/preproc/2_bbduk_rrna_filter/{sample}/{sample}_matched_SSU.fastq.gz" % config[
             "results_folder"]),
         lsu_matched=temp("%s/preproc/2_bbduk_rrna_filter/{sample}/{sample}_matched_LSU.fastq.gz" % config[
             "results_folder"])
+    params:
+        mcf=config["BBDuck"]["mcf"],
+        K=config["BBDuck"]["K"],
+        MAX_MEM=config["BBDuck"]["MAX_MEM"],
+        ssu_rrna_silva_file=config["ssu_rrna"],
+        lsu_rrna_silva_file=config["lsu_rrna"],
     log:
         ssu="%s/logs/preproc/2_filter_rrna_SSU_{sample}.log" % config["results_folder"],
         lsu="%s/logs/preproc/2_filter_rrna_LSU_{sample}.log" % config["results_folder"]
@@ -46,8 +46,8 @@ rule BBDUK_filter_rrna:
         printf \"Filtering rRNAs with BBDUK\\n\"
 
         #remove SSU rRNA reads
-        bbduk.sh K={params.K} mcf={params.mcf} in1={input.first} in2={input.second} out1={params.first_ssu} out2={params.second_ssu} outm={params.ssu_matched} ref={params.ssu_rrna_silva_file} overwrite=t {params.MAX_MEM} &> {log.ssu}
+        bbduk.sh K={params.K} mcf={params.mcf} in1={input.first} in2={input.second} out1={output.first_ssu} out2={output.second_ssu} outm={output.ssu_matched} ref={params.ssu_rrna_silva_file} overwrite=t {params.MAX_MEM} &> {log.ssu}
 
         #remove LSU rRNA reads
-        bbduk.sh K={params.K} mcf={params.mcf} in1={params.first_ssu} in2={params.second_ssu} out1={output.first} out2={output.second} outm={params.lsu_matched} ref={params.lsu_rrna_silva_file} overwrite=t {params.MAX_MEM} &> {log.lsu}
+        bbduk.sh K={params.K} mcf={params.mcf} in1={output.first_ssu} in2={output.second_ssu} out1={output.first} out2={output.second} outm={output.lsu_matched} ref={params.lsu_rrna_silva_file} overwrite=t {params.MAX_MEM} &> {log.lsu}
     """

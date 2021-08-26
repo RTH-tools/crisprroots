@@ -9,7 +9,7 @@ rule ROOTS_summarize_mapping_stats:
     log:
         "%s/logs/1-1_mapping_stats.log" % config["results_folder"]
     params:
-        scripts_folder=config["path_to_snakemake"]
+        scripts_folder=config["CRISPRroots"]
     conda:
         "../envs/py3.yaml"
     shell: """

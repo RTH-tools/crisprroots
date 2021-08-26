@@ -10,7 +10,7 @@ rule ROOTS_ontarget_check_knockin:
     log:
         "%s/logs/8_ROOTS_ontarget_check.log" % config["results_folder"]
     params:
-        scripts_folder=config["path_to_snakemake"],
+        scripts_folder=config["CRISPRroots"],
         positions=config["Edits"]["position"],
         mutants=config["Edits"]["mutant"],
         ref_fasta=config["picard_reference"],

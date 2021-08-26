@@ -4,18 +4,17 @@ rule eSNPKaryotyping_launch:
     """
     input:
         vcf_edited="%s/6_GATK_variants/{sample}/variants_filtered.vcf" % config["results_folder"],
-        bam_edited="%s/2_sortaligned/{sample}/Aligned.Sorted.bam" % config["results_folder"],
-        Rlog="%s/0_utils/0-0_R_install_check.tmp" % config["results_folder"]
+        bam_edited="%s/2_sortaligned/{sample}/Aligned.Sorted.bam" % config["results_folder"]
     output:
         out_image="%s/eSNPKaryotyping/{sample}_Zygosity_Blocks.pdf" % config["report_folder"]
     params:
         organism=config["species"],
         picard_ref_dict=config["picard_reference"][:-3] + ".dict",
-        scripts_folder=config["path_to_snakemake"],
+        scripts_folder=config["CRISPRroots"],
         report=config["report_folder"],
-        dbSNP_142_per_chromosome=config["dbSNP142"]
+        dbSNP_142_per_chromosome=config["eSNPKaryotyping"]["chr_SNPs"]
     log:
-        "%s/logs/14_eSNPKaryotype_{sample}.log" % config["results_folder"]
+        "%s/logs/14_eSNPKaryotyping_{sample}.log" % config["results_folder"]
     conda:
         "../envs/py3.yaml"
     shell: """

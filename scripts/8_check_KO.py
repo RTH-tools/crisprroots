@@ -26,16 +26,15 @@ for x in args.KO:
     assert x in df.index, 'Gene ID %s was not found in the given annotations' % x
     for i in samples:
         if df.at[x, i] > FLOAT_THRESHOLD_NO_EXPRESSION:
-            df_report.at[i, '%s' % x] = 'Present %.2f est. reads' % df.at[x, i]
             if df.at[x, 'log2FoldChange'] > 0 and df.at[x, 'padj'] < 0.05:
-                df_report.at[i, 'Changes'] = 'Upregulated in Edited\n%.2f L2FC, %.2E P-adj' % (
-                    df.at[x, 'log2FoldChange'], df.at[x, 'padj'])
+                df_report.at[i, '%s' % x] = 'Est. reads: %.2f\nUpregulated in Edited\n%.2f L2FC, %.2E P-adj' % (
+                    df.at[x, i],df.at[x, 'log2FoldChange'], df.at[x, 'padj'])
             elif df.at[x, 'log2FoldChange'] < 0 and df.at[x, 'padj'] < 0.05:
-                df_report.at[i, 'Changes'] = 'Downregulated in Edited\n%.2f L2FC, %.2E P-adj' % (
-                    df.at[x, 'log2FoldChange'], df.at[x, 'padj'])
+                df_report.at[i, '%s' % x] = 'Est. reads: %.2f\nDownregulated in Edited\n%.2f L2FC, %.2E P-adj' % (
+                    df.at[x, i],df.at[x, 'log2FoldChange'], df.at[x, 'padj'])
             else:
-                df_report.at[i, 'Changes'] = 'No expression difference\n%.2f L2FC, %.2E P-adj' % (
-                    df.at[x, 'log2FoldChange'], df.at[x, 'padj'])
+                df_report.at[i, '%s' % x] = 'Est. reads: %.2f\nNo expression difference\n%.2f L2FC, %.2E P-adj' % (
+                    df.at[x, i],df.at[x, 'log2FoldChange'], df.at[x, 'padj'])
         else:
             df_report.at[i, '%s' % x] = 'Absent %.2f est. reads' % df.at[x, i]
 with pd.ExcelWriter(args.output, engine='openpyxl') as writer:

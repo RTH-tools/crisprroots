@@ -5,12 +5,16 @@ rule ROOTS_dfgenecoordinates:
     input:
         dic="%s/0_utils/dict_chroms_lengths.pkl" % config["results_folder"],
         lifted_annotations="%s/0_utils/lifted_annotations.gtf" % config["results_folder"],
-        diffexp_table="%s/12-1_DESEq2DE/diffexpr-results.tsv" % config["results_folder"]
+        diffexp_table="%s/12-1_DESeq2/diffexpr-results.tsv" % config["results_folder"],
+        deup="%s/12-1_DESeq2/genes_DEUp.tsv" % config["results_folder"],
+        dedown="%s/12-1_DESeq2/genes_DEDown.tsv" % config["results_folder"],
+        notdeexp="%s/12-1_DESeq2/genes_NotDEExpressed.tsv" % config["results_folder"],
+        notdenotexp="%s/12-1_DESeq2/genes_NotDENotExpressed.tsv" % config["results_folder"]
     output:
-        "%s/12-2_DeGeneCoords/genes_coordinates.bed" % config["results_folder"]
+        temp("%s/12-2_DeGeneCoords/genes_coordinates.bed" % config["results_folder"])
     params:
-        dir="%s/12-1_DESEq2DE" % config["results_folder"],
-        scripts_folder=config["path_to_snakemake"],
+        dir="%s/12-1_DESeq2" % config["results_folder"],
+        scripts_folder=config["CRISPRroots"],
         len_promoter=config["ExpressionBasedScreening"]["len_promoter"]
     log:
         "%s/logs/12-2_degenescoordinates.log" % config["results_folder"]

@@ -1,9 +1,7 @@
 #!/bin/bash
-#module load anaconda3/1
+
 mkdir -p cluster_logs
-# this script must be called from the sample data directory. In case of the CRISPRroots_test_dataset, it is QPRT_DEL268T_chr16_10M-40M directory.
-# Below the path must be set to the location of snakemake directory 
-snakemake -s ../../CRISPRroots/run.smk \
+snakemake -s `dirname "$0"`/run.smk \
           -j 50 \
           --rerun-incomplete \
           --use-conda \

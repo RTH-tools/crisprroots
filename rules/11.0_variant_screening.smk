@@ -9,10 +9,10 @@ rule ROOTS_variant_screening:
         lifted_edits="%s/0_utils/lifted_edits.bed" % config["results_folder"],
         rnafold="%s/0_utils/guide_RNA.fold" % config["results_folder"]
     output:
-        tsv="%s/11_VariantBasedScreening/EvaluatedVariantsOffTargets.tsv" % config["results_folder"],
-        bed="%s/11_VariantBasedScreening/EvaluatedVariantsOffTargets.bed" % config["results_folder"]
+        tsv=temp("%s/11_VariantBasedScreening/EvaluatedVariantsOffTargets.tsv" % config["results_folder"]),
+        bed=temp("%s/11_VariantBasedScreening/EvaluatedVariantsOffTargets.bed" % config["results_folder"])
     params:
-        scripts_folder=config["path_to_snakemake"],
+        scripts_folder=config["CRISPRroots"],
         cut_position=config["Endonuclease"]["cut_position"],
         gRNA_sequence=config["Endonuclease"]["gRNA_sequence"],
         binding_sites=config["Endonuclease"]["binding_sites_seq"],

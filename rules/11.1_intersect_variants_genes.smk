@@ -6,9 +6,11 @@ rule BEDTOOLS_intersect_variants_genes:
         variants="%s/11_VariantBasedScreening/EvaluatedVariantsOffTargets.bed" % config["results_folder"],
         lifted_annotations="%s/0_utils/lifted_annotations.gtf" % config["results_folder"]
     output:
-        "%s/11_VariantBasedScreening/variants_genes_intersect.bed" % config["results_folder"]
+        v_g_intersect=temp("%s/11_VariantBasedScreening/variants_genes_intersect.bed" % config["results_folder"]),
+        g_sort=temp("%s/11_VariantBasedScreening/lifted_genes_coordinates_sorted.bed" % config["results_folder"]),
+        v_sort=temp("%s/11_VariantBasedScreening/variants_cut_positions_sorted.bed" % config["results_folder"])
     params:
-        scripts_folder=config["path_to_snakemake"],
+        scripts_folder=config["CRISPRroots"],
         out_folder=directory("%s/11_VariantBasedScreening" % config["results_folder"])
     conda:
         "../envs/py3.yaml"
@@ -26,5 +28,5 @@ rule BEDTOOLS_intersect_variants_genes:
         bedtools intersect \
         -a {params.out_folder}/variants_cut_positions_sorted.bed \
         -b {params.out_folder}/lifted_genes_coordinates_sorted.bed -loj -wa -sorted \
-        >{output}
+        >{output.v_g_intersect}
     """

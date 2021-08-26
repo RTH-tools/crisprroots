@@ -5,12 +5,12 @@ rule RIsearch2_search:
     input:
         indexed_genome="%s/6_GATK_variants/variated_genome.suf" % config["results_folder"]
     output:
-        directory("%s/6-5_CRISPRoff/RIsearch/" % config["results_folder"])
+        temp("%s/6-5_CRISPRoff/RIsearch2/risearch_%s.out.gz" % (config["results_folder"],gRNA_ID))
     log:
         "%s/logs/6-5-1_RIsearch2_search.log" % config["results_folder"]
     params:
-        gRNA=config["Endonuclease"]["gRNA_with_PAM_fasta"],
-        scripts_folder=config["path_to_snakemake"]
+        gRNA=config["gRNA_with_PAM_fasta"],
+        scripts_folder=config["CRISPRroots"]
     conda:
         "../envs/py3.yaml"
     shell: """

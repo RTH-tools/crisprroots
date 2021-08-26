@@ -11,7 +11,7 @@ rule STAR_align2pass:
     log:
         "%s/logs/1_star_align2pass_{sample}.log" % config["results_folder"]
     params:
-        threads=config["STAR_aligner"]["threads"],
+        threads=config["STAR"]["threads"],
         dir_prefix=directory("%s/1_star_align2pass/{sample}" % config["results_folder"]),
         indexed_transcriptome=config["STAR_indexed_transcriptome"]
     conda:

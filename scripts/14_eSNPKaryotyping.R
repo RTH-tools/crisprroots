@@ -1,5 +1,6 @@
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# eSNPKaryotyping pipeline from https://github.com/BenvenLab/eSNPKaryotyping modified to use CRISPRroots output files
+# eSNPKaryotyping v.1.0 pipeline from https://github.com/BenvenLab/eSNPKaryotyping.
+# Weissbein et al, 2015, modified to use with CRISPRroots output files
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 # list all lib paths availabe for R
@@ -18,7 +19,7 @@ assign(".lib.loc", conda_R_libpath, envir = environment(.libPaths))
 library(devtools, lib.loc = conda_R_libpath)
 library(zoo, lib.loc = conda_R_libpath)
 library(gplots, lib.loc = conda_R_libpath)
-library(eSNPKaryotyping, lib.loc = conda_R_libpath)
+#library(eSNPKaryotyping, lib.loc = conda_R_libpath)
 
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -640,6 +641,34 @@ PlotZygosityBlocks2 <- function(Table, Window, Max, Max2, Organism) {
     }
   }
 }
+
+MajorMinorCalc<-function(Table,minDP,maxDP,minAF){
+
+  Table[is.na(Table)] = 0
+  newTable = Table[Table$DP >= minDP,]
+  newTable = newTable[newTable$DP <= maxDP,]
+  AF1 = newTable$AD1/newTable$DP
+  AF2 = newTable$AD2/newTable$DP
+  newTable = data.frame("chr" = newTable$chr, "position" = newTable$position, "AF1" = AF1, "AF2" = AF2)
+  frequncyTable = newTable[newTable$AF1 >= minAF,]
+  frequncyTable = frequncyTable[frequncyTable$AF2 >= minAF,]
+  orderedTable = Sort_major_minor(data=frequncyTable, col1=3, col2=4)
+  MajorMinor = orderedTable$AF1/orderedTable$AF2
+  orderedTable["MajorMinor"] = MajorMinor
+  return(orderedTable)
+}
+
+Sort_major_minor<-function(data, col1, col2){
+  for (i in 1:dim(data)[1]) {
+    if (data[i,col1] < data[i,col2]) {
+      save = data[i,col2]
+      data[i,col2] = data[i,col1]
+      data[i,col1] = save
+    }
+  }
+  return(data)
+}
+
 
 print("Begin eSNPKaryotyping analysis")
 if (organism == "homo_sapiens") {

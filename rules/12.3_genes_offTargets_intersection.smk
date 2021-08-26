@@ -3,9 +3,11 @@ rule BEDTOOLS_intersect_degenes_offtargets:
         off_cutpos="%s/12-0_OffTargetCutPos/offtarget_cut_positions.bed" % config["results_folder"],
         genes_coords="%s/12-2_DeGeneCoords/genes_coordinates.bed" % config["results_folder"]
     output:
-        "%s/12-3_intersect_degenes_offtargets/genes_offtargets_intersect.bed" % config["results_folder"]
+        go_intersect=temp("%s/12-3_intersect_degenes_offtargets/genes_offtargets_intersect.bed" % config["results_folder"]),
+        g_sorted=temp("%s/12-3_intersect_degenes_offtargets/genes_coordinates_sorted.bed" % config["results_folder"]),
+        o_sorted=temp("%s/12-3_intersect_degenes_offtargets/offtarget_cut_positions_sorted.bed" % config["results_folder"])
     params:
-        scripts_folder=config["path_to_snakemake"],
+        scripts_folder=config["CRISPRroots"],
         out_folder=directory("%s/12-3_intersect_degenes_offtargets" % config["results_folder"])
     conda:
         "../envs/py3.yaml"

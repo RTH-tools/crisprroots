@@ -1,4 +1,4 @@
-rule FASTQC_qualitycheck_after_removal_rRNA_fastqc:
+rule FASTQC_qualitycheck_after_removal_rRNA:
     """
     Assessment of sequencing quality (FASTQC) of cleaned reads after removing rRNA reads
     """
@@ -9,8 +9,6 @@ rule FASTQC_qualitycheck_after_removal_rRNA_fastqc:
         directory("%s/preproc/2-1_fastqc_after_rRNA_removal/{sample}" % config["results_folder"])
     log:
         "%s/logs/preproc/2-1_fastqc_after_rRNA_removal.{sample}.log" % config["results_folder"]
-    benchmark:
-        "%s/benchmark/preproc/2-1_fastqc_after_rRNA_removal.{sample}.benchmark.tsv" % config["results_folder"]
     threads: 4
     conda:
         "../../../envs/preproc-qc.yaml"

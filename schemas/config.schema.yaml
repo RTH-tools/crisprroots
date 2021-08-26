@@ -13,9 +13,6 @@ properties:
   samples_folder:
     type: string
 
-  biosample:
-    type: string
-
   samples_table:
     type: string
 
@@ -33,6 +30,9 @@ properties:
     items:
       - single
       - paired
+
+  gRNA_with_PAM_fasta:
+    type: string
 
   variated_genome:
     type: string
@@ -57,22 +57,19 @@ properties:
   STAR_indexed_transcriptome:
     type: string
 
-  common_variants_vcf:
+  common_variants:
     type: string
 
   annotations_gtf:
     type: string
 
-  path_to_snakemake:
+  CRISPRroots:
     type: string
 
-  ssu_rrna_silva:
+  ssu_rrna:
     type: string
 
-  lsu_rrna_silva:
-    type: string
-
-  dbSNP142:
+  lsu_rrna:
     type: string
 
   RSeQC_gene_model:
@@ -127,7 +124,7 @@ properties:
   required:
     - libtype
 
-  DESEq2:
+  DESeq2:
     type: object
     properties:
       formula:
@@ -141,8 +138,6 @@ properties:
       cut_position:
         type: integer
       gRNA_sequence:
-        type: string
-      gRNA_with_PAM_fasta:
         type: string
       binding_sites_seq:
         type: array
@@ -166,7 +161,6 @@ properties:
   required:
     - cut_position
     - gRNA_sequence
-    - gRNA_with_PAM_fasta
     - binding_sites_seq
     - binding_sites_ratios
     - binding_sites_distance
@@ -230,7 +224,7 @@ properties:
     - K
     - MAX_MEM
 
-  STAR_aligner:
+  STAR:
     type: object
     properties:
       threads:
@@ -238,15 +232,26 @@ properties:
   required:
     - threads
 
-  R_install_pkgs:
+  CRISPRoff:
     type: object
     properties:
-      threads:
+      crisproff_output:
+        type: string
+      webserver:
         type: string
   required:
-    - threads
+    - crisproff_output
+    - webserver
 
-  MUTECT2:
+  eSNPKaryotyping:
+    type: object
+    properties:
+      chr_SNPs:
+        type: string
+  required:
+    - chr_SNPs
+
+  Mutect2:
     type: object
     properties:
       base_quality_score_threshold:
@@ -301,32 +306,30 @@ required:
   - results_folder
   - report_folder
   - samples_folder
-  - biosample
   - samples_table
   - sequencing
+  - gRNA_with_PAM_fasta
   - single_chr
   - variated_genome
   - species
   - picard_reference
   - repeatmasked_regions
   - STAR_indexed_transcriptome
-  - common_variants_vcf
+  - common_variants
   - annotations_gtf
-  - path_to_snakemake
-  - ssu_rrna_silva
-  - lsu_rrna_silva
-  - dbSNP142
+  - CRISPRroots
+  - ssu_rrna
+  - lsu_rrna
   - RSeQC_gene_model
-  - R_install_pkgs
   - Cutadapt
   - BCF_consensus
   - Featurecounts
-  - DESEq2
+  - DESeq2
   - Endonuclease
   - Edits
   - BBDuck
-  - STAR_aligner
-  - MUTECT2
+  - STAR
+  - Mutect2
   - VariantBasedScreening
   - ExpressionBasedScreening
   - Liftover

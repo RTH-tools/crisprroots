@@ -35,7 +35,7 @@ flagged_de_down = open(os.path.join(args.output, 'genes_DEDown.tsv'), 'w')
 expressed = open(os.path.join(args.output, 'genes_NotDEExpressed.tsv'), 'w')
 for x in [no_expression, flagged_de_up, flagged_de_down, expressed]:
     x.write('#Minimum mean reads required for expression = %f\n'
-            '#Min L2FC for elevate difference in expression levels = %i\n'
+            '#Min L2FC for differentially expressed genes = %f\n'
             'Gene\t'
             'L2FC\t'
             'Basemean exp. Original\t'

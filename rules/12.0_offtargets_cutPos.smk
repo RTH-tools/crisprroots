@@ -6,9 +6,9 @@ rule ROOTS_getOfftargetCutPositions:
     input:
         offtargets="%s/6-5_CRISPRoff/%s.CRISPRoff.tsv" % (config["results_folder"], gRNA_with_PAM)
     output:
-        off_cutpos="%s/12-0_OffTargetCutPos/offtarget_cut_positions.bed" % config["results_folder"]
+        off_cutpos=temp("%s/12-0_OffTargetCutPos/offtarget_cut_positions.bed" % config["results_folder"])
     params:
-        scripts_folder=config["path_to_snakemake"],
+        scripts_folder=config["CRISPRroots"],
         cp=config["Endonuclease"]["cut_position"],
         gRNA=config["Endonuclease"]["gRNA_sequence"],
         report=config["report_folder"]

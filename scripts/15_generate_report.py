@@ -205,8 +205,7 @@ if len(df_v) > 0:
     INVERT_STRAND = {'+': '-', '-': '+'}
     df_v['COORDINATES (0-based inclusive)'] = df_v['CHROM'] + ':' + df_v['START_BINDING'].astype('int').astype(
         'str') + '-' + df_v['END_BINDING'].apply(lambda x: str(int(x) - 1)) + ':' + df_v['STRAND_BINDING'].apply(
-        lambda x: INVERT_STRAND[
-            x])  # the strand is inverted to reflect the strand of the PAM, not of the binding site;  # coordinates are 0 based inclusive (-1 because on UCSC the last position is included [start:end]=[1,2] is 2 nts, not 1)
+        lambda x: INVERT_STRAND[x])  # the strand is inverted to reflect the strand of the PAM, not of the binding site;  # coordinates are 0 based inclusive (-1 because on UCSC the last position is included [start:end]=[1,2] is 2 nts, not 1)
     df_v['COORDINATES (1-based inclusive)'] = df_v['COORDINATES (0-based inclusive)'].apply(
         lambda x: from_0_to_1_based_coords(x))
     df_v['CUT_SITE'] = df_v['CUT_SITE'].astype('int')
@@ -222,7 +221,7 @@ if len(df_v) > 0:
                               float_max_deltagb=args.float_max_deltagb), axis=1)
     df_v['DeltaG_B'] = df_v['DeltaG_B'].apply(lambda x: '%.2f' % x)
     df_v.sort_values(["RISK", "DeltaG_B"], ascending=(True, True), inplace=True)
-
+    df_v.drop('TLOD', axis = 1, inplace=True)
 if len(df_t) > 0:
     def adjust_coords(ser_pos_strand, info):  # Coordinates are 0 based
         if info == 'Start':  # Start position on + stran

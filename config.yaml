@@ -1,0 +1,99 @@
+#**********************************************************************************************************************#
+#                                                     PROJECT PARAMETERS                                               #
+#**********************************************************************************************************************#
+CRISPRroots: <set_global_path_to_CRISPRroots>
+results_folder: <set_global_path_to_data_folder>/results
+report_folder: <set_global_path_to_data_folder>/report
+samples_folder: <set_global_path_to_data_folder>/SAMPLES
+samples_table: <set_global_path_to_data_folder>/samples_table.tsv
+sample_suffix: .fastq.gz
+sequencing: single
+gRNA_with_PAM_fasta : <set_global_path_to_data_folder>/gRNA_plus_PAM.fa
+single_chr: ["chrY"]
+variated_genome: 'no'
+#**********************************************************************************************************************#
+#                                                      REFERENCE FILES                                                 #
+#**********************************************************************************************************************#
+species: homo_sapiens
+picard_reference: <set_global_path_to_resources_folder>/GRCh38.primary_assembly.chr16.fa
+repeatmasked_regions: <set_global_path_to_resources_folder>/RepeatMasker_hg38_chr16.bed
+STAR_indexed_transcriptome: <set_global_path_to_resources_folder>/STAR_chr16_10M-40M
+common_variants: <set_global_path_to_resources_folder>/chr16.vcf.gz
+annotations_gtf: <set_global_path_to_resources_folder>/gencode_fantomcat.v1.02.genes_transcripts_exons_chr16_10M-40M.gtf
+ssu_rrna: <set_global_path_to_resources_folder>/SILVA_119.1_SSURef_Nr99_tax_silva_trunc.fasta.gz
+lsu_rrna: <set_global_path_to_resources_folder>/SILVA_119_LSURef_tax_silva_trunc.fasta.gz
+RSeQC_gene_model: <set_global_path_to_resources_folder>/hg38_RefSeq_genemodel.bed
+
+#**********************************************************************************************************************#
+#                                                      TOOL PARAMETERS                                                 #
+#**********************************************************************************************************************#
+
+Cutadapt: 
+  adapter: "<set_global_path_to_resources_folder>/illumina_universal.fa"
+  phread_score: "30"
+  min_length: "61"
+  other: "--trim-n"
+
+BBDuck:
+  mcf: "0.5"
+  K: "31"
+  MAX_MEM: -Xmx8g
+
+STAR:
+  threads: "4"
+
+Featurecounts:
+  libtype : 1
+
+DESeq2:
+  formula : ~ Condition
+
+BCF_consensus:
+  heterozygous_keep : A
+
+Mutect2:
+  base_quality_score_threshold: 30
+  callable_depth : 10
+  min_base_quality_score: 10
+  num_threads: 4
+
+Liftover:
+  min_match : 0.95
+
+Endonuclease:
+  cut_position : -3
+  gRNA_sequence : GCAGTTGAGTTGGGTAAATA
+  binding_sites_seq : ["GG", "GA", "AG"]
+  binding_sites_ratios: [1.0, 0.8, 0.9]
+  binding_sites_distance : 1
+  extend_binding : 2
+  eng_threshold : 0.0
+  seed_region : 10
+  max_mm_seed : 1
+
+
+Edits:
+  type : KO
+  position : ["chr16:29694840"]
+  mutant : ["N"]
+  splice_acceptor : [0]
+  splice_donor : [0]
+  intron : [0]
+  KO : ["ENSG00000103485.19"]
+
+VariantBasedScreening:
+  expand_search : 2
+
+CRISPRoff:
+  crisproff_output : <set_global_path_to_data_folder>/GCAGTTGAGTTGGGTAAATATGG.CRISPRoff.tsv
+  webserver : --webserver
+
+
+ExpressionBasedScreening:
+  len_promoter : 1000
+  crisproff: --crisproff
+
+
+eSNPKaryotyping:
+  chr_SNPs: <set_global_path_to_resources_folder>/common_SNP_142
+

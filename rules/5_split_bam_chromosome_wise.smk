@@ -6,17 +6,20 @@ rule ROOTS_split_bam_chromosome_wise:
         edited=expand("%s/4_GATK_dedupSplit/{edited}/{edited}.Split.bam" % config["results_folder"],edited=lst_edited),
         original=expand("%s/4_GATK_dedupSplit/{original}/{original}.Split.bam" % config[
             "results_folder"],original=lst_original),
+        edited_idx=expand("%s/4_GATK_dedupSplit/{edited}/{edited}.Split.bai" % config["results_folder"],edited=lst_edited),
+        original_idx=expand("%s/4_GATK_dedupSplit/{original}/{original}.Split.bai" % config[
+            "results_folder"],original=lst_original)
     output:
         chrsplit_edited=directory(expand("%s/5_chromosome_wise_splitted_bam/{edited}/" % config[
             "results_folder"],edited=lst_edited)),
         chrsplit_original=directory(expand("%s/5_chromosome_wise_splitted_bam/{original}/" % config[
             "results_folder"],original=lst_original)),
-        chrsplit_checkpoint="%s/5_chromosome_wise_splitted_bam/split.done" % config["results_folder"],
+        chrsplit_checkpoint=temp("%s/5_chromosome_wise_splitted_bam/split.done" % config["results_folder"])
     log:
         edited="%s/logs/5_split_bam_chromosome_wise_unique_edited.log" % config["results_folder"],
         original="%s/logs/5_split_bam_chromosome_wise_unique_original.log" % config["results_folder"],
     params:
-        scripts_folder=config["path_to_snakemake"],
+        scripts_folder=config["CRISPRroots"],
         seq_type=config["sequencing"],
         edited_dir=directory("%s/4_GATK_dedupSplit/" % config["results_folder"]),
         original_dir=directory("%s/4_GATK_dedupSplit/" % config["results_folder"]),

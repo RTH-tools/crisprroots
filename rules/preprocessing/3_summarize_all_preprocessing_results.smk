@@ -16,7 +16,7 @@ rule ROOTS_summarize_stats_multiqc:
     conda:
         "../../envs/py3.yaml"
     params:
-        scripts_folder=config['path_to_snakemake']
+        scripts_folder=config['CRISPRroots']
     shell: """
         printf \"Summarizing all multiqc main results\\n\"
 

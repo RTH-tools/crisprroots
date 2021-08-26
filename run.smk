@@ -13,8 +13,10 @@ assert len(invalid_conditions) == 0, "The samples table contains invalid conditi
 lst_edited = list(df_samples[df_samples['Condition'] == 'Edited'].index)
 lst_original = list(df_samples[df_samples['Condition'] == 'Original'].index)
 lst_samples = list(df_samples.index)
-with open(config["Endonuclease"]["gRNA_with_PAM_fasta"],'r') as gRNA_file:
-    gRNA_with_PAM = gRNA_file.readlines()[1].rstrip('\n')
+with open(config["gRNA_with_PAM_fasta"],'r') as gRNA_file:
+    lines=gRNA_file.readlines()
+    gRNA_with_PAM = lines[1].rstrip('\n')
+    gRNA_ID = lines[0].rstrip('\n').replace('>','')
 
 if not os.path.exists(config["results_folder"]):
     os.mkdir(config["results_folder"])
@@ -34,8 +36,8 @@ rule all:
         "%s/../report/mapping_stats.xlsx" % config["results_folder"],
         "%s/../report/on_target_knockin.xlsx" % config["results_folder"],
         "%s/../report/on_target_knockout.xlsx" % config["results_folder"],
-        expand("%s/2-2_RSeQC_libtype/{sample}_libtype.txt" % config["results_folder"],sample=lst_samples),
-    #expand("%s/eSNPKaryotyping/{sample}_Zygosity_Blocks.pdf" % config["report_folder"], sample=lst_samples)
+        expand("%s/2-1_RSeQC_libtype/{sample}_libtype.txt" % config["results_folder"],sample=lst_samples),
+        #expand("%s/eSNPKaryotyping/{sample}_Zygosity_Blocks.pdf" % config["report_folder"], sample=lst_samples)
 
 rule off_targets:
     input:
@@ -62,7 +64,7 @@ rule on_target_check:
 
 rule get_lib_type:
     input:
-        expand("%s/2-2_RSeQC_libtype/{sample}_libtype.txt" % config["results_folder"],sample=lst_samples)
+        expand("%s/2-1_RSeQC_libtype/{sample}_libtype.txt" % config["results_folder"],sample=lst_samples)
 
 rule get_variated_genome:
     input:
@@ -74,12 +76,11 @@ if config["sequencing"] == "single":
     include: "rules/1_star_align2pass_single.smk"
 else:
     include: "rules/1_star_align2pass_paired.smk"
-include: "rules/0.0_R_install.smk"
-include: "rules/0.1_make_utils.smk"
-include: "rules/0.2_RNAfold.smk"
+include: "rules/0.0_make_utils.smk"
+include: "rules/0.1_RNAfold.smk"
 include: "rules/1.1_summarize_mapping_stats.smk"
 include: "rules/2_sort_index_bam.smk"
-include: "rules/2.2_RSeQC_libtype.smk"
+include: "rules/2.1_RSeQC_libtype.smk"
 include: "rules/3_picard_sortaligned.smk"
 include: "rules/4.1_gatk_preproc_markdup.smk"
 include: "rules/4.2_gatk_preproc_splitncigar.smk"
@@ -108,9 +109,9 @@ include: "rules/11.1_intersect_variants_genes.smk"
 include: "rules/12.1_DESeq2_diffexp.smk"
 include: "rules/12.2_genes_coordinates.smk"
 include: "rules/12.3_genes_offTargets_intersection.smk"
-include: "rules/12.4_collapse_coordinates.smk"
-include: "rules/12.5_singlechr_filter.smk"
-include: "rules/12.6_expression_screening.smk"
+include: "rules/12.4.0_collapse_coordinates.smk"
+include: "rules/12.4.1_singlechr_filter.smk"
+include: "rules/12.5_expression_screening.smk"
 include: "rules/13_flags.smk"
 include: "rules/14_eSNPKAryotyping.smk"
 include: "rules/15_offTargets_report.smk"
