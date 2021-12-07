@@ -14,6 +14,7 @@ import pandas as pd
 import argparse as ap
 from pandas import errors
 import os
+from openpyxl import load_workbook
 
 
 # **********************************************************************************************************************
@@ -180,6 +181,7 @@ parser.add_argument('-fsv', '--flag_dbsnp_variants',
 parser.add_argument('-vg', '--vars_genes', help='bed file of coordinates of genes intersecting variants', type=str,
                     required=True)
 parser.add_argument('-o', help='Path to output file', required=True, type=str)
+parser.add_argument('-res', help='Path to the resources table containing the pre-defined front page of the output table', required=True, type=str)
 parser.add_argument('-ko', help='Transcript(s) IDs targeted', required=True, type=str, nargs='+')
 parser.add_argument('-type', help='Type of edit: KI (knockin) or KO (knockout)', required=True, type=str,
                     choices=['KI', 'KO'])
@@ -219,8 +221,8 @@ if len(df_v) > 0:
     df_v['PASS'] = df_v[['N. SEED MISMATCH', 'DeltaG_B']].apply(
         lambda x: filter_pass(x=x, int_max_mm_seed=args.seed_mismatch_tolerance,
                               float_max_deltagb=args.float_max_deltagb), axis=1)
-    df_v['DeltaG_B'] = df_v['DeltaG_B'].apply(lambda x: '%.2f' % x)
     df_v.sort_values(["RISK", "DeltaG_B"], ascending=(True, True), inplace=True)
+    df_v['DeltaG_B'] = df_v['DeltaG_B'].apply(lambda x: '%.2f' % x)
     df_v.drop('TLOD', axis = 1, inplace=True)
 if len(df_t) > 0:
     def adjust_coords(ser_pos_strand, info):  # Coordinates are 0 based
@@ -258,8 +260,23 @@ if len(df_t) > 0:
     df_t['PASS'] = df_t[['N. SEED MISMATCH', 'DeltaG_B']].apply(
         lambda x: filter_pass(x=x, int_max_mm_seed=args.seed_mismatch_tolerance,
                               float_max_deltagb=args.float_max_deltagb), axis=1)
-    df_t['DeltaG_B'] = df_t['DeltaG_B'].apply(lambda x: '%.2f' % x)
     df_t.sort_values(['RISK', 'DeltaG_B'], ascending=(True, True), inplace=True)
+    df_t['DeltaG_B'] = df_t['DeltaG_B'].apply(lambda x: '%.2f' % x)
+
+
+def highlight_category(df):
+    df_colors = pd.DataFrame('', index=df.index, columns=df.columns)
+    for x in df.index:
+        if df.loc[x,'RISK'] == 'CRITICAL':
+            df_colors.loc[x]='background-color: #FF6E6E'
+        elif 'MAJOR' in df.loc[x,'RISK']:
+            df_colors.loc[x]='background-color: #FFEB6E'
+        if df.loc[x, 'PASS'] == 'NO':
+            df_colors.loc[x] = ' color: #696969'
+    return df_colors
+
+book = load_workbook(args.res)
 with pd.ExcelWriter(args.o, engine='openpyxl') as writer:
-    df_t.to_excel(writer, sheet_name='Expression-based', index_label='ID')
-    df_v.to_excel(writer, sheet_name='Variants-based', index_label='ID')
+    writer.book=book
+    df_t.style.apply(highlight_category, axis=None).to_excel(writer, sheet_name='Expression-based', index_label='ID')
+    df_v.style.apply(highlight_category, axis=None).to_excel(writer, sheet_name='Variants-based', index_label='ID')

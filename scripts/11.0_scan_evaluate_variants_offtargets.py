@@ -17,7 +17,7 @@ from RisearchEval import get_best_match
 import pickle
 
 DICT_STRAND = {0: '-', 1: '+'}
-
+DEBUG=0
 
 # **********************************************************************************************************************
 
@@ -30,19 +30,25 @@ def get_seq_with_delimiters(chr: str, start: int, end: int, dict_chroms_lengths:
         return ''.join(seq.split('\n')[1:]), max(0, start), min(dict_chroms_lengths[chr], end)
 
 
-def search_bs_given_seq(ser: pd.Series, back: int, front: int, dict_chroms_lengths: dict, seq_region: str, sstart: int,
+def search_bs_given_seq(ser: pd.Series, back: int, front: int, seq_region: str, sstart: int,
                         send: int):
     df_bss = pd.DataFrame()
     for i in range(back, front + 1, 1):
         for len_bs in binding_sites.keys():
-            cut_site = ser['START'] + 1 + i  # have to do +1 because in twobit end position is excluded
+            cut_site = ser['START'] + i +1
+            if DEBUG:
+                print(cut_site)
             start_p = cut_site - args.cut_position - len(args.gRNA_sequence) - args.extend_binding  # PAM on plus strand
             end_p = cut_site - args.cut_position + args.binding_sites_distance + len_bs  # PAM on plus strand
             start_m = cut_site + args.cut_position - args.binding_sites_distance - len_bs  # PAM on minus strand
             end_m = cut_site + args.cut_position + len(args.gRNA_sequence) + args.extend_binding  # PAM on minus strand
+            if DEBUG:
+                print(seq_region, start_p - sstart, end_p-send)
             seq_gRNA_and_bs_p = Seq.Seq(seq_region[start_p - sstart:end_p - send])
             seq_gRNA_and_bs_m = Seq.Seq(seq_region[start_m - sstart:end_m - send]).reverse_complement()
             for strand, seq in enumerate([seq_gRNA_and_bs_p, seq_gRNA_and_bs_m]):
+                if DEBUG:
+                    print(strand, seq, str(seq[len(seq) - len_bs:len(seq)]))
                 if str(seq[len(seq) - len_bs:len(seq)]) in binding_sites[len_bs]:  # if there is a binding site
                     df_bss = df_bss.append(pd.Series({'CUT_SITE': cut_site,
                                                       'STRAND_BINDING': DICT_STRAND[strand],
@@ -57,6 +63,8 @@ def search_bs_given_seq(ser: pd.Series, back: int, front: int, dict_chroms_lengt
                                                       'DNA_BS': str(seq[:len(
                                                           seq) - len_bs - args.binding_sites_distance].reverse_complement())}),
                                            ignore_index=True)  # sr = search region, bs= binding site, E_bs = endonuclease binding site
+                    if DEBUG:
+                        print(df_bss)
     return df_bss
 
 
@@ -70,32 +78,24 @@ def evaluate_bs(df_bss: pd.DataFrame, pamratios: dict):
 
 def search_evaluate_bs(ser: pd.Series, dict_chroms_lengths: dict, pamratios: dict):
     seq_region, sstart, send = get_seq_with_delimiters(chr=ser['CHROM'],
-                                                       start=ser['START'] - args.expand_search + min((
-                                                               -args.cut_position - len(
-                                                           args.gRNA_sequence) - args.extend_binding),
-                                                           (
-                                                                   args.cut_position - args.binding_sites_distance - max(
-                                                               binding_sites.keys()))),
-                                                       end=ser['START'] + 1 + abs(
-                                                           min(0, ser['EVENTLENGTH'])) + args.expand_search + max((
-                                                               -args.cut_position + args.binding_sites_distance + max(
-                                                           binding_sites.keys())),
-                                                           (
-                                                                   args.cut_position + len(
-                                                               args.gRNA_sequence) + args.extend_binding)) + 1,
+                                                       start=ser['START'] - args.expand_search +
+                                                             min((-args.cut_position - len(args.gRNA_sequence) - args.extend_binding),
+                                                           (args.cut_position - args.binding_sites_distance - max(binding_sites.keys()))),
+                                                       end=ser['START'] + 1+ abs(min(0, ser['EVENTLENGTH'])) + args.expand_search +
+                                                           max((-args.cut_position + args.binding_sites_distance + max(binding_sites.keys())),
+                                                           (args.cut_position + len(args.gRNA_sequence) + args.extend_binding)) + 1,
                                                        dict_chroms_lengths=dict_chroms_lengths)
+    if DEBUG:
+        print(seq_region, sstart, send)
     if ser['EVENTLENGTH'] == 0:
-        return evaluate_bs(search_bs_given_seq(ser=ser, back=-1 - args.expand_search, front=0 + args.expand_search,
-                                               dict_chroms_lengths=dict_chroms_lengths, seq_region=seq_region,
+        return evaluate_bs(search_bs_given_seq(ser=ser, back=-1 - args.expand_search, front=0 + args.expand_search, seq_region=seq_region,
                                                sstart=sstart, send=send), pamratios=pamratios)
     if ser['EVENTLENGTH'] > 0:
-        return evaluate_bs(search_bs_given_seq(ser=ser, back=0 - args.expand_search, front=0 + args.expand_search,
-                                               dict_chroms_lengths=dict_chroms_lengths, seq_region=seq_region,
+        return evaluate_bs(search_bs_given_seq(ser=ser, back=0 - args.expand_search, front=0 + args.expand_search, seq_region=seq_region,
                                                sstart=sstart, send=send), pamratios=pamratios)
     if ser['EVENTLENGTH'] < 0:
         return evaluate_bs(search_bs_given_seq(ser=ser, back=0 - args.expand_search,
-                                               front=abs(ser['EVENTLENGTH']) + args.expand_search,
-                                               dict_chroms_lengths=dict_chroms_lengths, seq_region=seq_region,
+                                               front=abs(ser['EVENTLENGTH']) + args.expand_search, seq_region=seq_region,
                                                sstart=sstart, send=send), pamratios=pamratios)
 
 
@@ -185,9 +185,12 @@ else:
             binding_sites[len(x)].append(x)
         else:
             binding_sites[len(x)] = [x]
+    #df_v=df_v[df_v['EVENT']=='pos=chr16:70160783-70160784|ref=G|alt=T']
     for id, line in df_v.iterrows():
         # get binding sites and energies
         #print(id)
+        if DEBUG:
+            print(line['EVENT'])
         if not is_intended_edit(variant=line, edits_file=args.on_target_pos):
             df_bss = search_evaluate_bs(ser=line, dict_chroms_lengths=dict_chroms_lengths, pamratios=pamratios)
             if len(df_bss) > 0:

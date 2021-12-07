@@ -3,7 +3,7 @@ rule BCFTOOLS_consensus:
     Intersect germline variant calls to get variant consensus
     """
     input:
-        variants = "%s/6_GATK_variants/intersection_original/0000.vcf.gz" % config["results_folder"]
+        variants = "%s/6_GATK_variants/intersection_original/0000_filtered.vcf.gz" % config["results_folder"]
     output:
         genome = "%s/6_GATK_variants/variated_genome.fa" % config["results_folder"],
         chain_liftover = "%s/6_GATK_variants/chain_liftover_variated_genome.chain" % config["results_folder"]

@@ -3,7 +3,7 @@ rule BCFTOOLS_novariants:
     Creates the output of BCFTOOLS_intersect_original (6.2_bcf_intersect_original) if variant calling is not requested
     """
     output:
-        intersection="%s/6_GATK_variants/intersection_original/0000.vcf.gz" % config["results_folder"],
+        intersection="%s/6_GATK_variants/intersection_original/0000_filtered.vcf.gz" % config["results_folder"],
         vcf_intersection=temp("%s/6_GATK_variants/intersection_original/0000.vcf" % config["results_folder"])
     params:
         scripts_folder=config["CRISPRroots"]

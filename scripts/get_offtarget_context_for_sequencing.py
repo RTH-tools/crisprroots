@@ -17,7 +17,7 @@ import subprocess
 parser = ap.ArgumentParser()
 parser.add_argument('-ot', '--off_target', help='Path to table with off-targets', required=True, type=str)
 parser.add_argument('-r', '--risk', help='Risk class of the off-targets', required=True, type=str,
-                    choices=['CRITICAL', 'MAJOR', 'MINOR'])
+                    choices=['CRITICAL', 'MAJOR TYPE 1', 'MAJOR TYPE 2', 'MAJOR TYPE 3', 'MINOR'])
 parser.add_argument('-t', '--type', help='Only vairant-based, expression-based or both types of off-targets',
                     required=True, type=str,
                     choices=['Expression-based', 'Variant-based', 'Both'])
@@ -71,7 +71,7 @@ print(df)
 if not os.path.exists(args.outf):
     os.mkdir(args.outf)
 bedfile = os.path.join(args.outf,
-                       'Candidate_off_targets_%s_%s.bed' % (os.path.basename(args.off_target).split('.')[0], args.type))
+                       '%s_%s.bed' % (os.path.basename(args.off_target).split('.')[0], args.type))
 with open(bedfile, 'w') as out:
     for i, l in df.iterrows():
         chr = l['COORDINATES (1-based inclusive)'].split(':')[0]
@@ -80,7 +80,7 @@ with open(bedfile, 'w') as out:
         out.write('%s\t%i\t%i\t%s\t.\t%s\n' % (
             chr, int(start) - args.n_context - 1, int(end) + args.n_context, l['COORDINATES (1-based inclusive)'],
             strand))
-fastafile = os.path.join(args.outf, 'candidate_off_targets_%s_%s.fa' % (
+fastafile = os.path.join(args.outf, '%s_%s.fa' % (
     os.path.basename(args.off_target).split('.')[0], args.type))
 if not args.only_stats:
     if args.strandness:

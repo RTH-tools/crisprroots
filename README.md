@@ -1,7 +1,7 @@
 # CRISPRroots
 
-CRISPRroots: **R**NA-seq based **o**n-target and **o**ff-**t**arget assessment 
-of Cas9-mediated edit**s**
+CRISPRroots: **CRISPR**–Cas9-mediated
+edits with accompanying **R**NA-seq data assessed for **o**n-target and **o**ff-**t**arget **s**ites
 
 The CRISPR/Cas9 genome editing tool can be used to study genomic variants and gene knockouts.
 By combining CRISPR/Cas9 mediated editing with transcriptomic analyses it is possible to measure
@@ -174,7 +174,7 @@ This software is distributed in the hope that it will be useful, but WITHOUT ANY
 
 If you use CRISPRroots in your publication please cite:  
 **CRISPRroots: on- and off-target assessment of RNA-seq data in CRISPR-Cas9 edited cells**  
-Corsi GI, Gadekar VP, Gorodkin J, Seemann SE. _Submitted_.
+Corsi GI, Gadekar VP, Gorodkin J, Seemann SE. *Nucleic Acids Research (2021, in press)*.
 
 ## Contact
 

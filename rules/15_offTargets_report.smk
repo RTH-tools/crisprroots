@@ -23,7 +23,8 @@ rule ROOTS_offTargetReport:
         max_seed_mismatch=config["Endonuclease"]["max_mm_seed"],
         deltagb=config["Endonuclease"]["eng_threshold"],
         targets=config["Edits"]["KO"],
-        type=config["Edits"]["type"]
+        type=config["Edits"]["type"],
+        resource=config["CRISPRroots"]+'/resources/candidate_off_targets_template.xlsx'
     conda:
         "../envs/py3.yaml"
     shell: """
@@ -58,7 +59,9 @@ rule ROOTS_offTargetReport:
         --flag_repeatmask_variants {input.frv} \
         --flag_dbsnp_variants {input.fsv} \
         --vars_genes {input.vars_genes} \
-        -type {params.type}\
-        -ko {params.targets}\
+        -type {params.type} \
+        -ko {params.targets} \
+        -res {params.resource} \
         -o {output} &>{log}
+        
     """
