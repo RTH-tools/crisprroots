@@ -23,14 +23,13 @@ rule ROOTS_make_utils:
         edits="%s/logs/0_lifted_edits.log" % config["results_folder"],
         snpdb="%s/logs/0_lifted_snpdb.log" % config["results_folder"],
         rpkm="%s/logs/0_lifted_repeatmask.log" % config["results_folder"]
-    conda:
-        "../envs/twobit.yaml"
     params:
         scripts_folder=config["CRISPRroots"],
         min_match=config["Liftover"]["min_match"],
         annot=config["annotations_gtf"],
         SNPdb=config["common_variants"],
         rpkm=config["repeatmasked_regions"]
+    singularity : config["Singularity"]
     shell: """
     
         #******PARAMETERS*****

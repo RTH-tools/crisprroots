@@ -12,8 +12,7 @@ rule BEDTOOLS_intersect_variants_genes:
     params:
         scripts_folder=config["CRISPRroots"],
         out_folder=directory("%s/11_VariantBasedScreening" % config["results_folder"])
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell:
         """
         

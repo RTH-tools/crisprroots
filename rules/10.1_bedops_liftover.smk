@@ -12,8 +12,7 @@ rule BEDOPS_liftover:
         min_match=config["Liftover"]["min_match"]
     log:
         "%s/logs/10-1_liftover.log" % config["results_folder"]
-    conda:
-        "../envs/twobit.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****

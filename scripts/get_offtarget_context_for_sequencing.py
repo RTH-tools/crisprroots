@@ -20,7 +20,7 @@ parser.add_argument('-r', '--risk', help='Risk class of the off-targets', requir
                     choices=['CRITICAL', 'MAJOR TYPE 1', 'MAJOR TYPE 2', 'MAJOR TYPE 3', 'MINOR'])
 parser.add_argument('-t', '--type', help='Only vairant-based, expression-based or both types of off-targets',
                     required=True, type=str,
-                    choices=['Expression-based', 'Variant-based', 'Both'])
+                    choices=['Expression-based', 'Variants-based', 'Both'])
 parser.add_argument('-n', '--n_context', help='Number of nucleotides of left-right context', required=True, type=int)
 parser.add_argument('-g', '--genome', help='Genome in fasta format', type=str, required=True)
 parser.add_argument('-rk', '--filter_repeatmask', help='Remove repeatmasked off-targets', action='store_true')
@@ -33,16 +33,16 @@ parser.add_argument('-s', '--strandness',
 parser.add_argument('-os', '--only_stats', help='Only print off-target stats', action='store_true')
 args = parser.parse_args()
 
-if args.type == 'Variant-based':
+if args.type == 'Variants-based':
     df = pd.read_excel(args.off_target, sheet_name=args.type)[
         ['COORDINATES (1-based inclusive)', 'RISK', 'PASS', 'Repeatmask', 'dbSNP', 'DeltaG_B']]
 elif args.type == 'Expression-based':
     df = pd.read_excel(args.off_target, sheet_name=args.type)[
         ['COORDINATES (1-based inclusive)', 'RISK', 'PASS', 'Repeatmask', 'DeltaG_B']]
 else:
-    df1 = pd.read_excel(args.off_target, sheet_name='expression-based')[
+    df1 = pd.read_excel(args.off_target, sheet_name='Expression-based')[
         ['COORDINATES (1-based inclusive)', 'RISK', 'PASS', 'Repeatmask', 'DeltaG_B']]
-    df2 = pd.read_excel(args.off_target, sheet_name='variant-based')[
+    df2 = pd.read_excel(args.off_target, sheet_name='Variant-based')[
         ['COORDINATES (1-based inclusive)', 'RISK', 'PASS', 'Repeatmask', 'dbSNP', 'DeltaG_B']]
     df = df1.append(df2)
 print('there are %i off-targets candidates (OC)' % len(df))

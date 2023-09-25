@@ -8,8 +8,7 @@ rule RSEQC_libtype:
         libtype="%s/2-1_RSeQC_libtype/{sample}_libtype.txt" % config["results_folder"]
     params:
         gene_model=config["RSeQC_gene_model"]
-    conda:
-        "../envs/preproc-qc.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****

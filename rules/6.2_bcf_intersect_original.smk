@@ -18,8 +18,7 @@ rule BCFTOOLS_intersect_original:
     log:
         bcf="%s/logs/6-2_bcftools_intersect.log" % config["results_folder"],
         filter="%s/logs/6-2_filter.log" % config["results_folder"]
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
         #******PARAMETERS*****
         # -O : output type, z=compressed VCF

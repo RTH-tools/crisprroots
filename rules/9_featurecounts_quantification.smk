@@ -15,8 +15,7 @@ rule FEATURECOUNTS_quantification:
     log:
         "%s/logs/9_featurecounts_quantification.log" % config["results_folder"]
     threads: 16
-    conda:
-        "../envs/star-featurecounts.yaml"
+    singularity: config["Singularity"]
     shell: """
         printf \"Feature counts\\n\"
 

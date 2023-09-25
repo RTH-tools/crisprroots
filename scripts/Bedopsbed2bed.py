@@ -12,7 +12,7 @@ The script saved the first 3 columns (chr, start, end) and adds two columns.
 import pandas as pd
 import argparse as ap
 import os
-
+from io import StringIO
 
 # **********************************************************************************************************************
 
@@ -42,11 +42,27 @@ parser.add_argument('-i', help='Path to input file in Bedops bed format', type=s
 parser.add_argument('-o', help='Path to output file in bed format', type=str, required=True)
 args = parser.parse_args()
 
-if os.stat(args.i).st_size == 0:
-    pd.DataFrame(columns=['#chr', 'start', 'end']).to_csv(args.o)
+
+N_INFO_ROWS = 10
+
+with open(args.i, 'r') as infile:
+    lines = infile.readlines()
+    header_rows = [line for line in lines if line.startswith('_header')]
+    df_rows = [line for line in lines if not line.startswith('_header')]
+sorted_samples = [x.rstrip() for x in header_rows[-1].split('\t')][N_INFO_ROWS+2:]
+if len(df_rows)==0:
+    pd.DataFrame(columns=['#CHR', 'START', 'END', 'EVENT', 'EVENTLENGTH']).to_csv(args.o)
 else:
-    df = pd.read_csv(args.i, sep='\t', header=None)
-    df['Event'] = df[[0, 1, 2, 5, 6, 8]].apply(lambda x: 'pos=%s:%i-%i|ref=%s|alt=%s|tlod=%.2f' % (
+    df = pd.read_csv(StringIO('\n'.join(df_rows)), sep='\t', header=None)
+    df['EVENT'] = df[[0, 1, 2, 5, 6, 8]].apply(lambda x: 'pos=%s:%i-%i|ref=%s|alt=%s|tlod=%.2f|' % (
         x[0], x[1], x[2], x[5], ';'.join(x[6].split(',')), extract_tlod(x=x[8])), axis=1)
-    df['Eventlength'] = df[[5, 6]].apply(lambda x: get_eventlength(ser=x), axis=1)
-    df[[0, 1, 2, 'Event', 'Eventlength']].to_csv(args.o, sep='\t', header=None, index=None)
+    df['EVENTLENGTH'] = df[[5, 6]].apply(lambda x: get_eventlength(ser=x), axis=1)
+    for i,s in enumerate(sorted_samples):
+        df[s] = df[N_INFO_ROWS+i]
+        df[s] = df[s].apply(lambda x: ':'.join(x.split(':')[:2]))
+    for s in sorted_samples:
+        df['EVENT'] = df['EVENT'] + s + ':' + df[s] + ';'
+    df = df[[0,1,2,'EVENT', 'EVENTLENGTH']]
+    df.columns = ['#CHR', 'START', 'END', 'EVENT', 'EVENTLENGTH']
+    df.to_csv(args.o, sep='\t', index=None)
+

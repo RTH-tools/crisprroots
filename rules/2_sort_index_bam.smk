@@ -7,8 +7,7 @@ rule SAMTOOLS_sort_index_bam:
     log:
         sort="%s/logs/2_sort_bam_{sample}.log" % config["results_folder"],
         index="%s/logs/2_index_bam_{sample}.log" % config["results_folder"],
-    conda:
-         "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell:"""
         samtools sort {input.bam_aligned} -o {output.sorted_bam} &>{log.sort}
         samtools index {output.sorted_bam} &>{log.index}

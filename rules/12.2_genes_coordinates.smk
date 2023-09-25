@@ -18,8 +18,7 @@ rule ROOTS_dfgenecoordinates:
         len_promoter=config["ExpressionBasedScreening"]["len_promoter"]
     log:
         "%s/logs/12-2_degenescoordinates.log" % config["results_folder"]
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell:
         """
         #******PARAMETERS*****

@@ -17,6 +17,37 @@ import numpy as np
 
 SUGIMOTO_MATRIX = 'su95'
 
+def get_full_matchmismatch_binding_pattern(struct:str, gRNA:str, ot:str):
+    query_struct = struct.split('_')[0][::-1]
+    target_struct = struct.split('_')[1][::-1]
+    gRNA = gRNA[::-1]
+    print(query_struct, target_struct, gRNA, ot)
+    i, j = 0, 0
+    full_mm_struct = ['', '']
+    while i < len(query_struct) and j < len(target_struct) and (query_struct[i] != 'X' or target_struct[j] != 'X'):
+        if query_struct[i] != 'X':
+            full_mm_struct[0] = full_mm_struct[0] + query_struct[i]
+            i += 1
+        if target_struct[j] != 'X':
+            full_mm_struct[1] = full_mm_struct[1] + target_struct[j]
+            j += 1
+    while i < len(query_struct) and j < len(target_struct):
+        if query_struct[i] == 'X' and target_struct[j] == 'X':
+            if gRNA[i] == ot[j]:
+                full_mm_struct[0] = full_mm_struct[0] + '|'
+                full_mm_struct[1] = full_mm_struct[1] + '|'
+            elif (gRNA[i] == 'G' and ot[j] == 'A') or (gRNA[i] == 'T' and ot[j] == 'C'):
+                full_mm_struct[0] = full_mm_struct[0] + 'W'
+                full_mm_struct[1] = full_mm_struct[1] + 'W'
+            else:
+                full_mm_struct[0] = full_mm_struct[0] + 'M'
+                full_mm_struct[1] = full_mm_struct[1] + 'M'
+            i += 1
+            j += 1
+    full_mm_struct[0] = full_mm_struct[0][::-1]
+    full_mm_struct[1] = full_mm_struct[1][::-1]
+    return '_'.join(full_mm_struct)
+
 
 def get_best_match(df: pd.DataFrame, gRNA: str, rna_fold_out: str, pamratios: dict, seed_len: int):
     rnafold = get_rnafold(path_RNA_fold=rna_fold_out)
@@ -30,7 +61,7 @@ def get_best_match(df: pd.DataFrame, gRNA: str, rna_fold_out: str, pamratios: di
                 if len(target) < seed_len:
                     continue
                 risearch_out = subprocess.check_output(
-                    ['RIsearch1', '-Q', gRNA, '-T', target, '-m', SUGIMOTO_MATRIX, '-f', '5000', '-w',
+                    ['RIsearch', '-Q', gRNA, '-T', target, '-m', SUGIMOTO_MATRIX, '-f', '5000', '-w',
                      'CRISPR_20nt_5p_3p']).decode()
                 risearch_out = risearch_out.split('\n')
                 rnadna = float(risearch_out[-2].split(':')[1].split(' ')[1])
@@ -44,6 +75,9 @@ def get_best_match(df: pd.DataFrame, gRNA: str, rna_fold_out: str, pamratios: di
                     min_dgb = tmp_dgb
                     min_struct = tmp_bs
             df.at[bs, 'BINDING_STRUCT(Q-T)'] = min_struct
+            df.at[bs, 'FULL MATCH-MISMATCH PATTERN'] = get_full_matchmismatch_binding_pattern(struct=min_struct,
+                                                                                               gRNA=gRNA,
+                                                                                               ot=str(Seq.Seq(line['DNA_BS']).complement())) # do not take reverse complement, this function works on reversed seuences
             df.at[bs, 'DeltaG_B'] = min_dgb
     return df
 

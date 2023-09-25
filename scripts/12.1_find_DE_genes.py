@@ -17,7 +17,7 @@ import os
 
 EXPRESSED = 10
 L2FC = 0.5
-PADJ = 0.01
+PADJ = 0.05
 
 # **********************************************************************************************************************
 
@@ -51,22 +51,18 @@ dds['mean edited'] = dds[edited].mean(axis=1)
 dds.to_excel(os.path.join(args.report, 'DESeq2_differential_expression.xlsx'), sheet_name='DESeq2')
 
 for id, line in dds.iterrows():
-    if id.split('|')[0] not in args.KO:
-        if line['baseMean'] < EXPRESSED:
-            no_expression.write(id + '\t' + 'NA' + '\t' + str(line['mean original']) + '\t' + str(line[
-                                                                                                      'mean edited']) + '\n')  # possible DE analysis false negatives (CRISPR edits impedes expression after editing, of a gene that was previously non expressed)
-        else:
-            text = id + '\t' + str(line['log2FoldChange']) + '\t' + str(line['mean original']) + '\t' + str(
-                line['mean edited']) + '\n'
-            if line['padj'] < PADJ:
-                if line['log2FoldChange'] > L2FC:
-                    flagged_de_up.write(text)
-                elif line['log2FoldChange'] < -L2FC:
-                    flagged_de_down.write(text)
-                else:
-                    expressed.write(text)
+    if line['baseMean'] < EXPRESSED:
+        no_expression.write(id + '\t' + 'NA' + '\t' + str(line['mean original']) + '\t' + str(line[
+                                                                                                  'mean edited']) + '\n')  # possible DE analysis false negatives (CRISPR edits impedes expression after editing, of a gene that was previously non expressed)
+    else:
+        text = id + '\t' + str(line['log2FoldChange']) + '\t' + str(line['mean original']) + '\t' + str(
+            line['mean edited']) + '\n'
+        if line['padj'] < PADJ:
+            if line['log2FoldChange'] > L2FC:
+                flagged_de_up.write(text)
+            elif line['log2FoldChange'] < -L2FC:
+                flagged_de_down.write(text)
             else:
                 expressed.write(text)
-    else:
-        print('Removing %s from off-target candidates output as it is one of the intended KO genes\n' % (
-            id))
+        else:
+            expressed.write(text)

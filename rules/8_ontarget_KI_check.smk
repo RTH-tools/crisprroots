@@ -17,8 +17,7 @@ rule ROOTS_ontarget_check_knockin:
         splice_acceptor=config["Edits"]["splice_acceptor"],
         splice_donor=config["Edits"]["splice_donor"],
         intron=config["Edits"]["intron"]
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****

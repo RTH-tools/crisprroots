@@ -10,8 +10,7 @@ rule MULTIQC_input:
         folder="%s/preproc/0-1_multiqc" % config["results_folder"]
     log:
         "%s/logs/preproc/0-1_multiqc.log" % config["results_folder"]
-    conda:
-        "../../envs/preproc-qc.yaml"
+    singularity: config["Singularity"]
     shell: """
         printf \"Producing multiQC reports\\n\"
 

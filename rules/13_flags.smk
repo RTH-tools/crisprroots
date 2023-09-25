@@ -15,8 +15,7 @@ rule SAMTOOLS_flag:
         fsv="%s/logs/13_flags_fsv.log" % config["results_folder"],
         frt="%s/logs/13_flags_frt.log" % config["results_folder"],
         frv="%s/logs/13_flags_frv.log" % config["results_folder"]
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****

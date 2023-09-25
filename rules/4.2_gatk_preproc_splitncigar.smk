@@ -11,8 +11,7 @@ rule GATK_splitncigar:
         "%s/logs/4-2_GATK_SplitNCigar_{sample}.log" % config["results_folder"],
     params:
         reference="%s" % config["picard_reference"]
-    conda:
-        "../envs/gatk-picard.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****

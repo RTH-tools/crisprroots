@@ -8,12 +8,11 @@ rule BEDOPS_vcf2bed:
         bed=temp("%s/10_bedops_vcf2bed/mutect2_variants.bed" % config["results_folder"]),
     params:
         scripts_folder=config["CRISPRroots"],
-        tmp="%s/10_bedops_vcf2bed/tmp.bed" % config["results_folder"],
+        tmp="%s/10_bedops_vcf2bed/mutect2_full.bed" % config["results_folder"],
     log:
         bedops="%s/logs/10_bedops.log" % config["results_folder"],
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
-        zcat {input.vcf} | vcf2bed --do-not-split - > {params.tmp}
+        zcat {input.vcf} | vcf2bed --do-not-split --keep-header - > {params.tmp}
         python3 {params.scripts_folder}/scripts/Bedopsbed2bed.py -i {params.tmp} -o {output.bed} &>{log.bedops}
-    """
+        """

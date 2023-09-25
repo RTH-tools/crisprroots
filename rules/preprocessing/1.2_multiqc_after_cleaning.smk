@@ -11,8 +11,7 @@ rule MULTIQC_after_cleaning:
         "%s/logs/preproc/1-2_multiqc_after_cutadapt_cleaning.log" % config["results_folder"]
     params:
         folder="%s/preproc/1-2_multiqc_after_cutadapt_cleaning" % config["results_folder"]
-    conda:
-        "../../envs/preproc-qc.yaml"
+    singularity: config["Singularity"]
     shell: """
         printf \"Producing multiQC reports after cleaning\\n\"
 

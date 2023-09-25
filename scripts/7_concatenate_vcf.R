@@ -3,20 +3,20 @@
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 # list all lib paths availabe for R
-libpaths = .libPaths()
+#libpaths = .libPaths()
 wd = getwd()
 # select the lib path specific to the R installed in snakemake conda
-conda_R_libpath = libpaths[grep(paste(wd, ".snakemake/conda/", sep = "/"), libpaths)]
+#conda_R_libpath = libpaths[grep(paste(wd, ".snakemake/conda/", sep = "/"), libpaths)]
 
-print("R library path is set to: ")
-print(conda_R_libpath)
+#print("R library path is set to: ")
+#print(conda_R_libpath)
 
 # forget all other available R lib paths except conda_R_libpath
-assign(".lib.loc", conda_R_libpath, envir = environment(.libPaths))
+#assign(".lib.loc", conda_R_libpath, envir = environment(.libPaths))
 
 # load the installed packages
-library(data.table, lib.loc = conda_R_libpath)
-library(gtools, lib.loc = conda_R_libpath)
+library(data.table)#, lib.loc = conda_R_libpath)
+library(gtools)#, lib.loc = conda_R_libpath)
 
 # user inputs
 args = commandArgs(TRUE)
@@ -48,4 +48,3 @@ sink()
 closeAllConnections()
 
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-

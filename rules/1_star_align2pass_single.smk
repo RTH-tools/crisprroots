@@ -14,8 +14,7 @@ rule STAR_align2pass:
         threads=config["STAR"]["threads"],
         dir_prefix=directory("%s/1_star_align2pass/{sample}" % config["results_folder"]),
         indexed_transcriptome=config["STAR_indexed_transcriptome"]
-    conda:
-        "../envs/star-featurecounts.yaml"
+    singularity: config["Singularity"]
     shell: """
         #******PARAMETERS*****
         # --readFilesCommand : how to open the zipped format zcat

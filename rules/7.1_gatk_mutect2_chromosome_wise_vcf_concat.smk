@@ -13,8 +13,7 @@ rule GATK_mutect2_chromosome_wise_vcf_concat:
         dir="%s/7_GATK_mutect2_chromosome_wise/" % config["results_folder"],
         vcf="%s/7-1_GATK_mutect2_merged/mutect2_merged.vcf" % config["results_folder"],
         vcf_filtered="%s/7-1_GATK_mutect2_merged/mutect2_filtered.vcf" % config["results_folder"],
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
         
         Rscript {params.scripts_folder}/scripts/7_concatenate_vcf.R {params.dir} {params.vcf}

@@ -9,8 +9,7 @@ rule RNAfold_get_eng:
         gRNA_fa="%s/0_utils/gRNA.fa" % config["results_folder"],
     log:
         rnafold="%s/logs/0_RNAfold.log" % config["results_folder"],
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     params:
         gRNA=config["Endonuclease"]["gRNA_sequence"],
         scripts_folder=config["CRISPRroots"],

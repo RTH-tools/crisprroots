@@ -20,9 +20,10 @@ rule CUTADAPT_cleaning:
     log:
         "%s/logs/preproc/1_cutadapt.{sample}.log" % config["results_folder"]
     threads: 1
-    conda:
-        "../../../envs/preproc-qc.yaml"
+    singularity: config["Singularity"]
     shell: """
+        ls
+        ls /home
         output_dir=$(dirname {output.first})
         [ ! -d \"$output_dir\" ] && mkdir -p $output_dir
 

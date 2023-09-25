@@ -7,7 +7,8 @@ rule ROOTS_expressionbasedscreening:
                          config["results_folder"],
         dic="%s/0_utils/dict_chroms_lengths.pkl" % config["results_folder"],
         two_bit_genome="%s/0_utils/variated_genome.2bit" % config["results_folder"],
-        rnafold="%s/0_utils/guide_RNA.fold" % config["results_folder"]
+        rnafold="%s/0_utils/guide_RNA.fold" % config["results_folder"],
+        lifted_edits="%s/0_utils/lifted_edits.bed" % config["results_folder"]
     output:
         tsv=temp("%s/12-5_ExpressionBasedScreening/EvaluatedExpressionOffTargets.tsv" % config["results_folder"]),
         bed=temp("%s/12-5_ExpressionBasedScreening/EvaluatedExpressionOffTargets.bed" % config["results_folder"])
@@ -23,8 +24,7 @@ rule ROOTS_expressionbasedscreening:
         out_folder="%s/12-5_ExpressionBasedScreening" % config["results_folder"]
     log:
         "%s/logs/12-5_ExpressionScreening.log" % config["results_folder"]
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
         #******PARAMETERS*****
         # -input : table containing predicted off-target coordinates intersected with gene differential expression data
@@ -55,5 +55,6 @@ rule ROOTS_expressionbasedscreening:
         --output {params.out_folder} \
         --crisproff \
         --dict_genome_info {input.dic} \
+        --on_target_pos {input.lifted_edits} \
         &>{log}
     """

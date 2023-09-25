@@ -13,8 +13,7 @@ rule ROOTS_summarize_stats_multiqc:
     log:
         "%s/logs/preproc/3_summary_multiqc.log" % config["results_folder"]
     threads: 1
-    conda:
-        "../../envs/py3.yaml"
+    singularity: config["Singularity"]
     params:
         scripts_folder=config['CRISPRroots']
     shell: """

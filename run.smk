@@ -1,7 +1,6 @@
 import pandas as pd
 from snakemake.utils import validate
 import os
-
 #***** load config and sample sheets *****#
 configfile: "./config.yaml"
 validate(config,schema="schemas/config.schema.yaml")
@@ -37,7 +36,6 @@ rule all:
         "%s/../report/on_target_knockin.xlsx" % config["results_folder"],
         "%s/../report/on_target_knockout.xlsx" % config["results_folder"],
         expand("%s/2-1_RSeQC_libtype/{sample}_libtype.txt" % config["results_folder"],sample=lst_samples),
-        #expand("%s/eSNPKaryotyping/{sample}_Zygosity_Blocks.pdf" % config["report_folder"], sample=lst_samples)
 
 rule off_targets:
     input:
@@ -52,10 +50,6 @@ rule preproc_and_map:
 rule variants_to_genome:
     input:
         expand("%s/6_GATK_variants/{sample}/variants_filtered.vcf" % config["results_folder"],sample=lst_samples)
-
-rule eSNPKaryotyping:
-    input:
-        expand("%s/eSNPKaryotyping/{sample}_Zygosity_Blocks.pdf" % config["report_folder"],sample=lst_samples)
 
 rule on_target_check:
     input:
@@ -113,8 +107,7 @@ include: "rules/12.4.0_collapse_coordinates.smk"
 include: "rules/12.4.1_singlechr_filter.smk"
 include: "rules/12.5_expression_screening.smk"
 include: "rules/13_flags.smk"
-include: "rules/14_eSNPKAryotyping.smk"
-include: "rules/15_offTargets_report.smk"
+include: "rules/14_offTargets_report.smk"
 #***** load preprocessing *****#
 include: "rules/preprocessing/%s/1_cleaning_cutadapt.smk" % config["sequencing"]
 include: "rules/preprocessing/%s/2_filter_rrna.smk" % config["sequencing"]

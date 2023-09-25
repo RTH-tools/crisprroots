@@ -11,8 +11,7 @@ rule GATK_filters_haplotypecaller:
         "%s/logs/6-1.GATK_filter_{sample}.log" % config["results_folder"]
     params:
         reference=config["picard_reference"],
-    conda:
-        "../envs/gatk-picard.yaml"
+    singularity: config["Singularity"]
     shell: """
         #Filter variants
         # QD : quality calls 

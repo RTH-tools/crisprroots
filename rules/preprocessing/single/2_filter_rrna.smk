@@ -19,8 +19,7 @@ rule BBDUK_filter_rrna:
         ssu="%s/logs/preproc/2_filter_rrna_SSU_{sample}.log" % config["results_folder"],
         lsu="%s/logs/preproc/2_filter_rrna_LSU_{sample}.log" % config["results_folder"]
     threads: 2
-    conda:
-        "../../../envs/preproc-qc.yaml"
+    singularity: config["Singularity"]
     shell:"""
 
 	#********PARAMETERS*******

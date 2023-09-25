@@ -9,8 +9,7 @@ rule FASTQC_quality_check:
     log:
         "%s/logs/preproc/0_fastqc_{sample}.log" % config["results_folder"]
     threads: 4
-    conda:
-        "../../../envs/preproc-qc.yaml"
+    singularity: config["Singularity"]
     shell:"""
 
         [ ! -d \"{output}\" ] && mkdir {output}

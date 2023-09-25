@@ -8,8 +8,7 @@ rule PICARD_sortaligned:
         bam_sorted=temp("%s/3_picard_sortaligned/{sample}/{sample}.Aligned.Sorted.bam" % config["results_folder"]),
     log:
         "%s/logs/3_picard_sort_aligned_{sample}.log" % config["results_folder"],
-    conda:
-        "../envs/gatk-picard.yaml"
+    singularity: config["Singularity"]
     shell: """
         # sort aligned reads
         picard SortSam \

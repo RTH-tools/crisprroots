@@ -12,8 +12,7 @@ rule BCFTOOLS_consensus:
     params:
         reference=config["picard_reference"],
         heterozygous_allele_keep=config["BCF_consensus"]["heterozygous_keep"]
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell:"""
     
     #******PARAMETERS*****

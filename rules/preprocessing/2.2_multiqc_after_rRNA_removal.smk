@@ -10,8 +10,7 @@ rule MULTIQC_after_rRNA_removal:
         "%s/logs/preproc/2-2_multiqc_after_rRNA_removal.log" % config["results_folder"]
     params:
         folder="%s/preproc/2-2_multiqc_after_rRNA_removal" % config["results_folder"]
-    conda:
-        "../../envs/preproc-qc.yaml"
+    singularity: config["Singularity"]
     shell: """
         printf \"Producing multiQC reports after cleaning\\n\"
 

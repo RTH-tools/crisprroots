@@ -15,8 +15,7 @@ rule CRISPRoff:
         folder="%s/6-5_CRISPRoff/" % config["results_folder"],
         scripts_folder=config["CRISPRroots"],
         gRNA_plus_PAM="%s.CRISPRoff.tsv" % gRNA_with_PAM
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****

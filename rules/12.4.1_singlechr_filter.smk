@@ -13,8 +13,7 @@ rule ROOTS_singlechr_filter:
         single_chr=config["single_chr"]
     log:
         "%s/logs/12-4_SingleChr_filter.log" % config["results_folder"]
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****

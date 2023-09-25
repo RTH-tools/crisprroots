@@ -163,18 +163,20 @@ path_scripts = os.path.dirname(os.path.realpath(__file__))
 # get reference genome info
 dict_chroms_lengths = get_chroms_lengths()
 # parse variants table (bcf)
+LST_COLS=['CHROM', 'START', 'END', 'DNA_BS', 'OFF-TARGET+CONTEXT', 'EVENT', 'PAM', 'CUT_SITE',
+          'STRAND_BINDING', 'START_BINDING', 'END_BINDING', 'BINDING_STRUCT(Q-T)', 'FULL MATCH-MISMATCH PATTERN', 
+          'DeltaG_B', 'TLOD', 'ALLELIC DEPTHS']
 if os.stat(args.variants_table).st_size == 0:
-    df_out = pd.DataFrame(
-        columns=['CHROM', 'START', 'END', 'DNA_BS', 'OFF-TARGET+CONTEXT', 'EVENT', 'PAM', 'CUT_SITE',
-                 'STRAND_BINDING', 'START_BINDING', 'END_BINDING', 'BINDING_STRUCT(Q-T)', 'DeltaG_B', 'TLOD'])
+    df_out = pd.DataFrame(columns=LST_COLS)
     df_out.to_csv(os.path.join(args.output, 'EvaluatedVariantsOffTargets.tsv'), sep='\t', index_label='VARIANT ID')
     open(os.path.join(args.output, 'EvaluatedVariantsOffTargets.bed'), 'w').close()
 else:
     df_v = pd.read_table(args.variants_table, sep='\t', header=None)
     df_v.columns = ['CHROM', 'START', 'END', 'EVENT', 'EVENTLENGTH']
-    df_v['TLOD'] = df_v['EVENT'].apply(lambda x: x.split('tlod=')[1])
+    df_v['TLOD'] = df_v['EVENT'].apply(lambda x: x[x.find('tlod='):].split('|')[0].replace('tlod=',''))
+    df_v['ALLELIC DEPTHS'] = df_v['EVENT'].apply(lambda x: '|'.join(x[x.find('tlod='):].split('|')[1:]))
     df_v['EVENT'] = df_v['EVENT'].apply(lambda x: x[:x.find('|tlod=')])
-    df_v['START'] = df_v['START'].astype(int)
+    df_v['START'] = df_v['START'].astype(int) #note that in bedops to bed this position is the variant position -1, while "end" is the variant position. This way we moved from 1-based to 0-based coords
     df_v['END'] = df_v['END'].astype(int)
     lst_engs = []
     df_out = pd.DataFrame()
@@ -205,13 +207,9 @@ else:
     # output best bindings at each position
     if len(df_out) > 0:
         df_out.sort_values('DeltaG_B', inplace=True)
-        df_out = df_out[
-            ['CHROM', 'START', 'END', 'DNA_BS', 'OFF-TARGET+CONTEXT', 'EVENT', 'PAM', 'CUT_SITE', 'STRAND_BINDING',
-             'START_BINDING', 'END_BINDING', 'BINDING_STRUCT(Q-T)', 'DeltaG_B', 'TLOD']]
+        df_out = df_out[LST_COLS]
     else:
-        df_out = pd.DataFrame(
-            columns=['CHROM', 'START', 'END', 'DNA_BS', 'OFF-TARGET+CONTEXT', 'EVENT', 'PAM', 'CUT_SITE',
-                     'STRAND_BINDING', 'START_BINDING', 'END_BINDING', 'BINDING_STRUCT(Q-T)', 'DeltaG_B', 'TLOD'])
+        df_out = pd.DataFrame(columns=LST_COLS)
     df_out['START'] = df_out['START'].astype(int)
     df_out['END'] = df_out['END'].astype(int)
     df_out.to_csv(os.path.join(args.output, 'EvaluatedVariantsOffTargets.tsv'), sep='\t', index_label='VARIANT ID')

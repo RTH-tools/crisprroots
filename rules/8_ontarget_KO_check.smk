@@ -11,8 +11,7 @@ rule ROOTS_ontarget_check_knockout:
     params:
         scripts_folder=config["CRISPRroots"],
         targets=config["Edits"]["KO"],
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****

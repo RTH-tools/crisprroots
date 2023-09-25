@@ -10,8 +10,7 @@ rule ROOTS_summarize_mapping_stats:
         "%s/logs/1-1_mapping_stats.log" % config["results_folder"]
     params:
         scripts_folder=config["CRISPRroots"]
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****

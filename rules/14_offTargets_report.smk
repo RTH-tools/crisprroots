@@ -12,7 +12,7 @@ rule ROOTS_offTargetReport:
     output:
         txt="%s/../report/candidate_off_targets.xlsx" % config["results_folder"]
     log:
-        "%s/logs/15_Offtarget_report.log" % config["results_folder"]
+        "%s/logs/14_Offtarget_report.log" % config["results_folder"]
     params:
         scripts_folder=config["CRISPRroots"],
         seed=config["Endonuclease"]["seed_region"],
@@ -25,8 +25,7 @@ rule ROOTS_offTargetReport:
         targets=config["Edits"]["KO"],
         type=config["Edits"]["type"],
         resource=config["CRISPRroots"]+'/resources/candidate_off_targets_template.xlsx'
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****
@@ -46,7 +45,7 @@ rule ROOTS_offTargetReport:
         # -ko : Knockout gene IDs
         # -type : Type of edit: KI (knockin) or KO (knockout)
    
-        python3 {params.scripts_folder}/scripts/15_generate_report.py \
+        python3 {params.scripts_folder}/scripts/14_generate_report.py \
         -oft {input.oft} \
         -ofv {input.ofv} \
         --seed {params.seed} \

@@ -1,6 +1,6 @@
 # CRISPRroots
 
-CRISPRroots: **CRISPR**–Cas9-mediated
+CRISPRroots v.1.3: **CRISPR**–Cas9-mediated
 edits with accompanying **R**NA-seq data assessed for **o**n-target and **o**ff-**t**arget **s**ites
 
 The CRISPR/Cas9 genome editing tool can be used to study genomic variants and gene knockouts.
@@ -20,15 +20,18 @@ The method is described in the corresponding publication (see below).
 ## Installation and configuration
 
 ### Prerequisites
+* Snakemake ≥ 7.28.3
+* Apptainer ≥ 1.1.8
+* CRISPRroots docker container
+
 
 The CRISPRroots pipeline can be executed via 
-[Snakemake](https://snakemake.readthedocs.io/en/stable/).  
-To be executed in Sankemake, the pipeline requires:
-* conda : ≥4.8.5
-* snakemake : ≥5.32.00 
-
-All other software requirements are satisfied by the Conda environments defined in Snakemake,
-which are installed by starting Snakemake with the `--use-conda` flag.
+[Snakemake](https://snakemake.readthedocs.io/en/stable/).
+All other software requirements are satisfied by the CRISPRroots container, available at [Docker Hub](https://hub.docker.com/r/gcorsi1993/crisprroots):
+```shell
+docker pull gcorsi1993/crisprroots
+```
+The container is provided to Snakemake using the option `--use-singularity`.
 
 The pipeline was tested in a x86 64 GNU/Linux environment with Ubuntu v.18.04.1 (or newer) 
 installed.
@@ -36,28 +39,27 @@ installed.
 ### Setup
 
 CRISPRroots is available to download from 
-[https://rth.dk/resources/crispr/](https://rth.dk/resources/crispr/).  
-A test dataset is also available on the same website. 
+[https://rth.dk/resources/crispr/](https://rth.dk/resources/crispr/). 
+A test dataset is also provided on the same website. 
 After downloading and un-packing the software and the test dataset, we recommend 
 to explore the directory structure of the test dataset.
 
 *  CRISPRroots_test_dataset
-    *   resources #reference files
-    *   QPRT_DEL268T_chr16_10M-40M #sample directory
-    *   `make_config.py` #setup config file
+    *   `resources` # folder with reference files
+    *   `QPRT_DEL268T_chr16_10M-40M` # folder with data examples
+    *   `make_config.py` # setup script
 
-the script `make_config.py` can be used to automatically set the paths to the data, resources, 
-and code directories in the configuration file `config.yaml` located in 
+the script `make_config.py` can be used to automatically set the paths to the data, resources, code directory and singularity in the configuration file `config.yaml` located in 
 `CRISPRroots_test_dataset/QPRT_DEL268T_chr16_10M-40M`. 
 To run the script, you need python3.
 To setup the config file for the test dataset, run:
 ```shell
-  cd CRISPRroots_test_dataset
-  python3 make_config.py --CRISPRroots <path_to_CRISPRroots>
+  $ cd CRISPRroots_test_dataset
+  $ python3 make_config.py --CRISPRroots <path_to_CRISPRroots> --singularity <path_to_singularity>
 ```
 The config file contains the parameters defined for the execution of the various steps of the pipeline. 
 A copy of the config file for the CRISPRroots test dataset is provided together with 
-the CRISPRroots software package. This file can be used as template to create the configuration file 
+the CRISPRroots software package, under `resources`. This file can be used as template to create the configuration file 
 for your own dataset.
 
 For a complete list of parameters, options, and usage examples for CRISPRroots please read the 
@@ -65,18 +67,25 @@ For a complete list of parameters, options, and usage examples for CRISPRroots p
 
 ## Pipeline usage
 ### Basic Usage
-Assuming you have installed the software in the prerequisites, you can run the pipeline 
-from within the directory containing the config file (in the test dataset this is
+You can run the pipeline from within the directory containing the config file (in the test dataset this is
 the subfolder *QPRT_DEL268T_chr16_10M-40M*) as follows: 
 ```shell
-  cd QPRT_DEL268T_chr16_10M-40M #for usage in the test dataset, substitute with your own directory otherwise
-  snakemake -s <path_to_CRISPRroots>/run.smk --use-conda --dry-run 
-  snakemake -s <path_to_CRISPRroots>/run.smk --use-conda --cores <int>
+$ cd QPRT_DEL268T_chr16_10M-40M # example with test dataset
+$ snakemake -s <path_to_CRISPRroots>/run.smk --cores <int> --use-singularity --singularity-args
+"--bind <global_path_to_QPRT_DEL268T_chr16_10M-40M>:<global_path_to_QPRT_DEL268T_chr16_10M-40M>
+--bind <global_path_to_resources>:<global_path_to_resources>
+--bind <global_path_to_CRISPRroots-1.3>:<global_path_to_CRISPRroots-1.3>" --dry-run
+$ snakemake -s <path_to_CRISPRroots>/run.smk --cores <int> --use-singularity --singularity-args
+"--bind <global_path_to_QPRT_DEL268T_chr16_10M-40M>:<global_path_to_QPRT_DEL268T_chr16_10M-40M>
+--bind <global_path_to_resources>:<global_path_to_resources>
+--bind <global_path_to_CRISPRroots-1.3>:<global_path_to_CRISPRroots-1.3>"
 ```
 
 We recommend to first run Snakemake with `--dryrun`.  
 This displays what will be done without executing it and highlights if any input file is missing. 
 In the commands above, `--cores` specifies the maximum number of cores used in parallel by Snakemake.
+The option `--singularity-args` is necessary to provide snakemake all the parameters to be passed to the singularity run. These are usually the `--bind` parameters that link local folders to the singularity.
+
 The pre-computed results/reports for the test dataset are available in the folder 
 *CRISPRroots_test_dataset/QPRT_DEL268T_chr16_10M-40M/pre-computed*.
 
@@ -95,30 +104,33 @@ The pipeline can also be used to accomplish only specific tasks.
 For example, to only perform the the pre-processing of the dataset and read mapping, 
 you can run CRISPRroots with the rule flag `preproc_and_map` at the end:
 ```shell
-  snakemake -s <path_to_CRISPRroots/run.smk --use-conda --cores <int> preproc_and_map
+$ snakemake -s <path_to_CRISPRroots>/run.smk --cores <int> --use-singularity --singularity-args
+"--bind <global_path_to_QPRT_DEL268T_chr16_10M-40M>:<global_path_to_QPRT_DEL268T_chr16_10M-40M>
+--bind <global_path_to_resources>:<global_path_to_resources>
+--bind <global_path_to_CRISPRroots-1.3>:<global_path_to_CRISPRroots-1.3>" preproc_and_map
 ```
-The tasks (Snakemake rules) ready for use are the following:
+The rule preproc_and_map only executes the pre-processing and mapping steps. 
 
+Relevant predefined target rules include:
+*   **preproc_and_map**: Executes all pre-processing and mapping steps. Output:
+    - Mapped reads: `<path_to_results_folder>/2_sortaligned/<sample name>/Aligned.Sorted.bam` 
+    - Preprocessing and fastQC/multiQC quality reports: `<path_to_results_folder>/preproc/`
 *   **variants_to_genome**: executes the rules necessary to produce files containing 
     filtered variants between each sample and the reference genome. 
-    Output in: `<path_to_results_folder>/6_GATK_variants/<sample name>/variants_filtered.vcf`
-*   **eSNPKaryotyping**: Executes the R package eSNP-Karyotyping for the analysis of 
-    genome integrity from RNA-seq. 
-    The standard workflow is modified to employ reads mapped with STAR instead of TopHat2\. 
-    Output in: `<path_to_report_folder>/eSNPKaryotyping/`
+    Output: `<path_to_results_folder>/6_GATK_variants/<sample name>/variants_filtered.vcf`
 *   **on_target_check**: executes the on-target editing assessment. 
-    Output in: `<path_to_report_folder>/on_target_knockin.xlsx`; 
+    Output: `<path_to_report_folder>/on_target_knockin.xlsx`; 
     `<path_to_report_folder>/on_target_knockout.xlsx`
 *   **get_variated_genome**: produces a variant-aware version of the reference genome, 
     in which variants discovered from the RNA-seq are introduced in the reference sequence. 
-    Output in: `<path_to_results_folder>/6_GATK_variants/variated_genome.fa`
+    Output: `<path_to_results_folder>/6_GATK_variants/variated_genome.fa`
 *   **get_lib_type**: assesses the library type with RSeQC. 
-    Output in: `<path_to_results_folder>/2-1_RSeQC_libtype/`
+    Output: `<path_to_results_folder>/2-1_RSeQC_libtype/`
 *   **preproc_and_map**: runs the reads pre-processing and mapping.  
-    Mapping output in: `<path_to_results_folder>/2_sortaligned/`      
-    Mapping statistics in: `<path_to_report_folder>/report/mapping_stats.xlsx`  
-    Pre-processing results in: `<path_to_results_folder>/preproc/`  
-    Pre-processing statistics in: `<path_to_report_folder>/report/multiqc_samples_stats.xlsx` 
+    Mapping output: `<path_to_results_folder>/2_sortaligned/`      
+    Mapping statistics: `<path_to_report_folder>/report/mapping_stats.xlsx`  
+    Pre-processing results: `<path_to_results_folder>/preproc/`  
+    Pre-processing statistics: `<path_to_report_folder>/report/multiqc_samples_stats.xlsx` 
 
 NB: In the test dataset, `<path_to_results_folder>` and `<path_to_report_folder>` correspond to the 
 subfolders *results* and *report* in that will be generated inside 
@@ -132,27 +144,27 @@ if required by a subsequent execution of the pipeline.
 
 ### Running the pipeline in a computer cluster
 
-CRISPRroots can also be launched on a computer cluster. 
-An example of how to set up CRISPRroots to run it with the Slurm Workload Manager 
-is given in the test directory and can be used as:
+An example of how to set up `CRISPRroots` to run it with the Slurm Workload Manager is given in the test directory as `cluster_run.sh`. Configurations are given in `cluster_config.yaml`. To test the `cluster_run.sh` script on your system, first you need to fill in the fields:
+* `<set_global_path_to_run.smk>` : path to the run.smk script in the CRISPRroots-1.3 folder
+* `--singularity-args "<set_singularity_args_eg._binds>"` : all your singularity arguments,
+such as bindings to the folders containing data, resources, and code
+
+Once the script is complete, you can run it simply as:
 ```shell
-  cd CRISPRroots_test_dataset/QPRT_DEL268T_chr16_10M-40M
-  ./<path_to_CRISPRroots>/cluster_run.sh
+  ./cluster_run.sh
 ```
-You can add the name of a target rule to run only a part of the pipeline as below:
+You can add the name of a target rule to run only a part of the pipeline
 ```shell
-  ./<path_to_CRISPRroots>/cluster_run.sh [target_rule]
+  ./cluster_run.sh [target_rule]
 ```
       
 ## Output files
 The pipeline’s output files are collected in two folders: **report** and **results**. 
-Additionally, Snakemake generates a hidden folder, **.snakemake**, at the moment it is executed. 
-Here, Snakemake stores all the information necessary to track the activity of the pipeline and 
-the origin of each file it generates. The conda environments created by Snakemake are also stored in this folder.
 
 The **report** folder contains the main output, including the candidate off-targets and the knockin/knockout
-assessment. Results regarding differential expression and processing statistics (data quality and map-
-ping) are also present.
+assessment. Results regarding differential expression and processing statistics (data quality and mapping) are also present.
+
+The **results** folder contains all the output files of the pipeline that are not marked as `temp` (use `--notemp` to persist all files).
 
 Please refer to the *CRISPRroots_Manual.pdf* included in the CRISPRroots software folder for a complete description fo the 
 output and its content.

@@ -23,8 +23,7 @@ rule DESEQ2_differential_expression:
         r="%s/logs/12-1_diffexpr_r.log" % config["results_folder"],
         p="%s/logs/12-1_diffexpr_summarize.log" % config["results_folder"]
     threads: 16
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
         
         #******PARAMETERS*****

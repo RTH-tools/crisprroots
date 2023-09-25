@@ -9,8 +9,7 @@ rule BEDTOOLS_intersect_degenes_offtargets:
     params:
         scripts_folder=config["CRISPRroots"],
         out_folder=directory("%s/12-3_intersect_degenes_offtargets" % config["results_folder"])
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell:
         """
         

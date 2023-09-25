@@ -34,7 +34,7 @@ def get_seq(chr: str, start: int, end: int, dict_chroms_lengths: dict, two_bit_g
 
 def search_bs(ser: pd.Series, strand: str, gRNA_length: int, extend_binding: int,
               dict_chroms_lengths: dict, cut_pos: int, two_bit_genome: str):
-    cut_site = int(ser['Start cut region'])  # No -1, in twobit end position is excluded but coords in vcf are 1-based
+    cut_site = int(ser['Start cut region']) # No -1, already 0-based
     if strand == '+':
         return Seq.Seq(get_seq(chr=ser['Off-target candidate chr.'],
                                start=cut_site - cut_pos - gRNA_length - extend_binding,
@@ -49,6 +49,12 @@ def search_bs(ser: pd.Series, strand: str, gRNA_length: int, extend_binding: int
                     dict_chroms_lengths=dict_chroms_lengths,
                     two_bit_genome=two_bit_genome))
 
+def is_intended_edit(variant: pd.Series, edits_lst: list):
+    for x in range(variant['Start cut region'], variant['End cut region']+1):#start cut region=end cut region, 1-based from CRISPRoff, on-target coords are 1-based.
+        for edit in edits_lst:
+            if '%s\t%i\t%i' % (variant['Off-target candidate chr.'], x-1, x) == edit: #lifted edits are saved as [edit pos - 1, edit pos]
+                return True
+    return False
 
 def extract_off_target_candidates(path_input_table: str, gRNA_length: int, cut_pos: int, twobit='', extend_binding=0):
     df = pd.read_csv(path_input_table, sep='\t', header=None, comment='#')  # do not include lines starting with '#'
@@ -56,8 +62,14 @@ def extract_off_target_candidates(path_input_table: str, gRNA_length: int, cut_p
                   'Off-targeting score', 'Strand off-target PAM', 'PAM', 'GENOMIC FEATURES']
     df['PAM'] = df['PAM'].apply(lambda x: x.upper())
     df['gRNA (DNA)'] = df['PAM'].apply(lambda x: x.upper())
+    to_remove_ontarget = []
+    with open(args.on_target_pos, 'r') as edit_pos:
+        edits = [x.rstrip('\n') for x in edit_pos.readlines()]
     if args.crisproff and extend_binding == 0:
         for id, line in df.iterrows():
+            if is_intended_edit(variant=line, edits_lst=edits):
+                to_remove_ontarget.append(id)
+                continue
             df.at[id, 'DNA_BS'] = str(Seq.Seq(line['gRNA (DNA)']).reverse_complement())
             df.at[id, 'OFF-TARGET+CONTEXT'] = str(Seq.Seq(line['gRNA (DNA)']))
             df.at[id, 'ENDONUCLEASE_BS'] = line['PAM'][
@@ -66,6 +78,9 @@ def extract_off_target_candidates(path_input_table: str, gRNA_length: int, cut_p
     else:  # this will include the bulges, if required
         dict_chroms_lengths = pickle.load(open(args.dict_genome_info, 'rb'))
         for id, line in df.iterrows():
+            if is_intended_edit(variant=line, edits_lst=edits):
+                to_remove_ontarget.append(id)
+                continue
             dnabs = str(search_bs(ser=line, strand=line['Strand off-target PAM'],
                                   cut_pos=cut_pos, dict_chroms_lengths=dict_chroms_lengths,
                                   two_bit_genome=twobit,
@@ -76,7 +91,7 @@ def extract_off_target_candidates(path_input_table: str, gRNA_length: int, cut_p
                                            args.binding_sites_distance:] if args.binding_sites_distance > 0 else line[
                 'PAM']
             df.at[id, 'OFF-TARGET+CONTEXT'] = str(Seq.Seq(dnabs).reverse_complement())
-    return df
+    return df.drop(to_remove_ontarget)
 
 
 def get_pam_ratios(pams: list, ratios: list):
@@ -113,6 +128,8 @@ parser.add_argument('-b', '--binding_sites', help='Sequence of the endonuclease 
                     type=str, nargs='+', required=True)
 parser.add_argument('-br', '--binding_sites_ratios', help='List of weights for binding site(s)',
                     type=float, nargs='+', required=True)
+parser.add_argument('-p', '--on_target_pos', help='Position(s) where on-target edits are expected (bed file).',
+                    type=str, default="")
 
 args = parser.parse_args()
 if args.extend_binding != 0 and args.two_bit_genome == '':

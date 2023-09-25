@@ -12,8 +12,7 @@ rule ROOTS_collapse_coordinates:
         scripts_folder=config["CRISPRroots"],
     log:
         "%s/logs/12-4_CollapseCoordinatesGenesOff.log" % config["results_folder"]
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell:
         """
         python3 {params.scripts_folder}/scripts/12.4_collapse_expression_offtargets.py \

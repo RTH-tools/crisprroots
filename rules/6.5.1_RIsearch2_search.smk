@@ -11,8 +11,7 @@ rule RIsearch2_search:
     params:
         gRNA=config["gRNA_with_PAM_fasta"],
         scripts_folder=config["CRISPRroots"]
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****
@@ -26,6 +25,6 @@ rule RIsearch2_search:
         # -p3 : output format
         # -t : num threads
     
-        RIsearch2 -q {params.gRNA} -i {input.indexed_genome} -s 1:20 -m 6:0 -e 10000 -l 0 --noGUseed -p3 -t 16 &>{log}
+        risearch2.x -q {params.gRNA} -i {input.indexed_genome} -s 1:20 -m 6:0 -e 10000 -l 0 --noGUseed -p3 -t 16 &>{log}
         mv risearch_*.out.gz {output}
     """

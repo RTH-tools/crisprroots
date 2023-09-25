@@ -45,9 +45,6 @@ properties:
     items:
       type: string
 
-  species:
-    type: string
-
   picard_reference:
     type: string
 
@@ -243,14 +240,6 @@ properties:
     - crisproff_output
     - webserver
 
-  eSNPKaryotyping:
-    type: object
-    properties:
-      chr_SNPs:
-        type: string
-  required:
-    - chr_SNPs
-
   Mutect2:
     type: object
     properties:
@@ -295,6 +284,17 @@ properties:
   required:
     - min_match
 
+  HaplotypeCaller:
+    type: object
+    properties:
+      ploidy:
+        type: number
+  required:
+    - ploidy
+
+  Singularity:
+    type: string
+
 oneOf:
   - required:
     - sample_suffix
@@ -311,7 +311,6 @@ required:
   - gRNA_with_PAM_fasta
   - single_chr
   - variated_genome
-  - species
   - picard_reference
   - repeatmasked_regions
   - STAR_indexed_transcriptome
@@ -333,3 +332,5 @@ required:
   - VariantBasedScreening
   - ExpressionBasedScreening
   - Liftover
+  - HaplotypeCaller
+

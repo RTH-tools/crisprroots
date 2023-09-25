@@ -24,8 +24,7 @@ rule ROOTS_variant_screening:
         expand_search=config["VariantBasedScreening"]["expand_search"]
     log:
         "%s/logs/11_VariantScreening.log" % config["results_folder"]
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
         #******PARAMETERS*****
         # -v : table containing identified variants

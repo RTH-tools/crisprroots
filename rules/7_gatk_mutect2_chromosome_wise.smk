@@ -6,7 +6,8 @@ rule GATK_mutect2_chromosome_wise:
     input:
         edited=expand("%s/5_chromosome_wise_splitted_bam/{edited}/" % config["results_folder"],edited=lst_edited),
         original=expand("%s/5_chromosome_wise_splitted_bam/{original}/" % config["results_folder"],original=lst_original),
-        chrsplit_checkpoint="%s/5_chromosome_wise_splitted_bam/split.done" % config["results_folder"]
+        chrsplit_checkpoint1=expand("%s/5_chromosome_wise_splitted_bam/{edited}/split.done" % config["results_folder"],edited=lst_edited),
+        chrsplit_checkpoint2=expand("%s/5_chromosome_wise_splitted_bam/{original}/split.done" % config["results_folder"],original=lst_original)
     output:
         checkpoint="%s/7_GATK_mutect2_chromosome_wise/mutect2.done" % config["results_folder"],
     log:
@@ -21,8 +22,7 @@ rule GATK_mutect2_chromosome_wise:
         reference=config["picard_reference"],
         parallel_jobs=config["Mutect2"]["num_threads"]
 
-    conda:
-        "../envs/gatk-picard.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****

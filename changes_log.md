@@ -1,12 +1,15 @@
-##Version 1.2
+##Version 1.3
 ### Technical improvements
 
 ### Bugs fixed
-  * The sorting of potential off-targets based first on RISK, then on DeltaG_B condisered DeltaG_B as a string, rather than a float number. 
-  * Variants overlapping deletions (*) were integrated in the genome during the generation of the variant-aware reference, but were automatically removed by faToTwoBit, resulting in a shift of coordinates between the fasta and the two-bit variant-aware genomes. This is now solved by transforming \* to N. This does not affect the results presented in the CRISPRroots publication.  
-
+  * The input-output connection between steps 5- and 7- was incorrect, and because of that all samples had to run together, in a single job, in step 5. Now they are correctly parallelized.
+  * The expression-based off-target screening is modified to remove potential off-targets that cleave the on-target site. In "find_DE_genes" the on-target KO gene is not removed from the list of DE genes that can carry off-targets.
+  * Corrected wrong table names in get_offtarget_context_for_sequencing.py
 ### Other changes
-  * New dependency for jinja2 in the py3 conda environment, required for styling the candidate off-targets output file
-  * The output table of candidate off-targets has been improved with colors highlighting specific entries. The excel file now include a front page with information on how to interpret the content of the tables.
-  * New script on how to obtain DNA sequences flanking potential off-targets, which can be used to design primers. The script is now described in the manual.
+  * In the variant-based off-target screening, the "lifted edits" file is opened before the loop over variants, to avoid multiple opening operations
+  * Threshold for DE genes changed to 0.05 instead of 0.01 in expression-based off-target search
+  * Introduced new columns in report files to state the full gRNA-pOT binding pattern and allele counts that support variants linked tovariant-based pOTs (pOT=potential off-target)
+  * Terminated eSNPKaryotyping support
+### Environment changes
+  * Terminated conda support and switched to docker/singularity for improved stability. The definition of the conda environments is still present and functional. However, due to the instability of certain environments, we will no longer offer support on this and recomment using the provided docker container.
 

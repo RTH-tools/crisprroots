@@ -11,9 +11,9 @@ rule GATK_haplotypecaller:
         "%s/logs/6_GATK_haplotypecaller_{sample}.log" % config["results_folder"]
     params:
         reference=config["picard_reference"],
-        dbsnp=config["common_variants"]
-    conda:
-        "../envs/gatk-picard.yaml"
+        dbsnp=config["common_variants"],
+        ploidy=config["HaplotypeCaller"]["ploidy"]
+    singularity: config["Singularity"]
     shell: """
         
         #******PARAMETERS*****
@@ -29,6 +29,7 @@ rule GATK_haplotypecaller:
         -O {output.vcf} \
         --standard-min-confidence-threshold-for-calling 20 \
         --dbsnp {params.dbsnp} \
+        --sample-ploidy {params.ploidy} \
         &>{log}
 
     """

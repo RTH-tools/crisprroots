@@ -10,8 +10,7 @@ rule FASTQC_qualitycheck_after_removal_rRNA:
     log:
         "%s/logs/preproc/2-1_fastqc_after_rRNA_removal.{sample}.log" % config["results_folder"]
     threads: 4
-    conda:
-        "../../../envs/preproc-qc.yaml"
+    singularity: config["Singularity"]
     shell: """
         [ ! -d \"{output}\" ] && mkdir {output}
 

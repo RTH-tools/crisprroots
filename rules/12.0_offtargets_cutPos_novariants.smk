@@ -14,8 +14,7 @@ rule ROOTS_getOfftargetCutPositions:
         webserver=config["CRISPRoff"]["webserver"],
     log:
         "%s/logs/12-0_off_target_cut_pos.log" % config["results_folder"]
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****

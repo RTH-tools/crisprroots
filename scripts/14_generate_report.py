@@ -190,16 +190,16 @@ args = parser.parse_args()
 len_gRNA = len(args.gRNA_sequence)
 if os.stat(args.ofv).st_size == 0:
     df_v = pd.DataFrame(
-        columns=['COORDINATES (1-based inclusive)', 'OFF-TARGET+CONTEXT', 'PAM', 'BINDING_STRUCT(Q-T)', 'EVENT', 'TLOD',
-                 'DeltaG_B', 'dbSNP', 'Repeatmask', 'GENOMIC FEATURES'])
+        columns=['COORDINATES (1-based inclusive)', 'OFF-TARGET+CONTEXT', 'PAM', 'BINDING_STRUCT(Q-T)',
+                 'FULL MATCH-MISMATCH PATTERN', 'EVENT','DeltaG_B', 'dbSNP', 'Repeatmask', 'GENOMIC FEATURES', 'ALLELIC DEPTHS'])
 else:
     df_v = pd.read_csv(args.ofv, sep='\t', index_col='VARIANT ID')
     df_v = add_flags(df=df_v, fr=args.flag_repeatmask_variants, fs=args.flag_dbsnp_variants)
     df_v = add_genes_overlap(df=df_v, genes_overlap=args.vars_genes)
 if os.stat(args.oft).st_size == 0:
     df_t = pd.DataFrame(
-        columns=['COORDINATES (1-based inclusive)', 'OFF-TARGET+CONTEXT', 'PAM', 'BINDING_STRUCT(Q-T)', 'DE_EVENTS',
-                 'DeltaG_B', 'Repeatmask', 'GENOMIC FEATURES'])
+        columns=['COORDINATES (1-based inclusive)', 'OFF-TARGET+CONTEXT', 'PAM', 'BINDING_STRUCT(Q-T)',
+                 'FULL MATCH-MISMATCH PATTERN', 'DE_EVENTS', 'DeltaG_B', 'Repeatmask', 'GENOMIC FEATURES'])
 else:
     df_t = pd.read_csv(args.oft, sep='\t', index_col='ID')
     df_t = add_flags(df=df_t, fr=args.flag_repeatmask_transcripts, fs='no')
@@ -211,11 +211,12 @@ if len(df_v) > 0:
     df_v['COORDINATES (1-based inclusive)'] = df_v['COORDINATES (0-based inclusive)'].apply(
         lambda x: from_0_to_1_based_coords(x))
     df_v['CUT_SITE'] = df_v['CUT_SITE'].astype('int')
-    df_v = df_v[['COORDINATES (1-based inclusive)', 'OFF-TARGET+CONTEXT', 'PAM', 'BINDING_STRUCT(Q-T)', 'EVENT', 'TLOD',
-                 'DeltaG_B', 'dbSNP', 'Repeatmask', 'GENOMIC FEATURES']]
+    df_v = df_v[['COORDINATES (1-based inclusive)', 'OFF-TARGET+CONTEXT', 'PAM', 'BINDING_STRUCT(Q-T)',
+                 'FULL MATCH-MISMATCH PATTERN', 'EVENT', 'TLOD', 'DeltaG_B', 'dbSNP', 'Repeatmask', 'GENOMIC FEATURES','ALLELIC DEPTHS']]
     df_v['N. SEED MISMATCH'] = df_v['BINDING_STRUCT(Q-T)'].apply(lambda x: count_mismatches(x=x, l=args.seed))
     df_v['N. MISMATCH/UNUSED'] = df_v['BINDING_STRUCT(Q-T)'].apply(lambda x: count_mismatches(x=x))
     df_v['RISK'] = df_v.apply(lambda x: map_risk(x), axis=1)
+
     if args.type == 'KO':
         df_v = df_v[df_v.apply(lambda x: not is_ontarget_gene(x), axis=1)].copy()
     df_v['PASS'] = df_v[['N. SEED MISMATCH', 'DeltaG_B']].apply(
@@ -252,8 +253,8 @@ if len(df_t) > 0:
         lambda x: from_0_to_1_based_coords(x))
     df_t['DE_EVENTS'] = df_t['GENOMIC FEATURES'].apply(lambda x: get_DE_event(x))
     df_t = df_t[
-        ['COORDINATES (1-based inclusive)', 'OFF-TARGET+CONTEXT', 'PAM', 'BINDING_STRUCT(Q-T)', 'DE_EVENTS', 'DeltaG_B',
-         'Repeatmask', 'GENOMIC FEATURES']]
+        ['COORDINATES (1-based inclusive)', 'OFF-TARGET+CONTEXT', 'PAM', 'BINDING_STRUCT(Q-T)',
+         'FULL MATCH-MISMATCH PATTERN', 'DE_EVENTS', 'DeltaG_B', 'Repeatmask', 'GENOMIC FEATURES']]
     df_t['N. SEED MISMATCH'] = df_t['BINDING_STRUCT(Q-T)'].apply(lambda x: count_mismatches(x=x, l=args.seed))
     df_t['N. MISMATCH/UNUSED'] = df_t['BINDING_STRUCT(Q-T)'].apply(lambda x: count_mismatches(x=x))
     df_t['RISK'] = df_t.apply(lambda x: map_risk_de(x), axis=1)
@@ -265,14 +266,14 @@ if len(df_t) > 0:
 
 
 def highlight_category(df):
-    df_colors = pd.DataFrame('', index=df.index, columns=df.columns)
+    df_colors = pd.DataFrame('font-family:"Liberation Mono"; ', index=df.index, columns=df.columns)
     for x in df.index:
         if df.loc[x,'RISK'] == 'CRITICAL':
-            df_colors.loc[x]='background-color: #FF6E6E'
+            df_colors.loc[x]=df_colors.loc[x]+'background-color: #FF6E6E; '
         elif 'MAJOR' in df.loc[x,'RISK']:
-            df_colors.loc[x]='background-color: #FFEB6E'
+            df_colors.loc[x]=df_colors.loc[x]+'background-color: #FFEB6E; '
         if df.loc[x, 'PASS'] == 'NO':
-            df_colors.loc[x] = ' color: #696969'
+            df_colors.loc[x] = df_colors.loc[x]+'color: #696969; '
     return df_colors
 
 book = load_workbook(args.res)

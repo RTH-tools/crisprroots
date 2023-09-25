@@ -14,8 +14,7 @@ rule ROOTS_getOfftargetCutPositions:
         report=config["report_folder"]
     log:
         "%s/logs/12-0_Off_target_cut_pos.log" % config["results_folder"]
-    conda:
-        "../envs/py3.yaml"
+    singularity: config["Singularity"]
     shell: """
     
         #******PARAMETERS*****
